@@ -93,6 +93,9 @@
       <p>Verkochte hoeveelheid energie: <span id="energiehoeveelheid"></span></p>
       <p>Terugverdentijd: <span id="terugverdentijd"></span></p>
       <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span></p>
+      <p>Rendement na 12 jaar: <span id="rendement_12jaar"></span></p>
+      <p>Rendement in maand 61: <span id="rendement_maand_61"></span></p>
+      <p>Maximaal verlies: <span id="max_verlies"></span></p>
       <canvas id="barChart" height="150"></canvas>
       <canvas id="lineChart" height="250"></canvas>
     </div>
@@ -123,6 +126,9 @@
         document.getElementById("energiehoeveelheid").textContent = res.energiehoeveelheid + ' kWh';
         document.getElementById("terugverdentijd").textContent = res.terugverdentijd + ' maanden';
         document.getElementById("jaarlijksrendement").textContent = res.rendement_jaarlijks + ' %';
+        document.getElementById("rendement_12jaar").textContent = res.rendement_12jaar + ' €';
+        document.getElementById("rendement_maand_61").textContent = res.rendement_maand_61 + ' €';
+        document.getElementById("max_verlies").textContent = res.max_verlies + ' €';
 
         if (window.barChart instanceof Chart) window.barChart.destroy();
         window.barChart = new Chart(document.getElementById("barChart"), {
