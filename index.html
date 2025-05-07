@@ -13,7 +13,12 @@
       });
 
       if (!response.ok) {
-        throw new Error("Serverfout: " + response.status);
+        throw new Error(`Foutcode ${response.status} van backend`);
+      }
+
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        throw new Error("Backend gaf geen geldige JSON terug");
       }
 
       const res = await response.json();
@@ -58,8 +63,8 @@
         }
       });
     } catch (error) {
-      alert("Fout bij berekening: " + error.message);
-      console.error("Berekenfout:", error);
+      console.error("Fout bij berekening:", error);
+      alert("Er ging iets mis: " + error.message);
     }
   }
 </script>
