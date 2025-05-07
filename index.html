@@ -136,7 +136,7 @@
         [...new FormData(document.getElementById("form")).entries()]
         .map(([k, v]) => [k, v.replace(',', '.')])
       );
-      const response = await fetch("/bereken", {
+    const response = await fetch("https://bellade-backend.onrender.com/bereken", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
