@@ -4,78 +4,150 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bellade Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #E3F9E0;
+      color: #005A00;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .block {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      background-color: #00FC63;
+      color: #000;
+      font-weight: 800;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .result {
+      background-color: #373736;
+      color: #00FC63;
+      padding: 20px;
+      border-radius: 16px;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; background-color: #F5F5F5; padding: 40px; color: #333;">
-  <h1>Bellade Tool (Basis)</h1>
-  <form id="bereken-form">
-    <label>Vermogen (kW): <input name="vermogen" value="80" /></label><br/>
-    <label>Opstartkost (€): <input name="opstartkost" value="15000" /></label><br/>
-    <label>Huurprijs (€): <input name="huurprijs" value="1095" /></label><br/>
-    <label>Huurprijs vanaf maand 61 (€): <input name="huurprijs_later" value="275" /></label><br/>
-    <label>Starttarief (€): <input name="starttarief" value="2" /></label><br/>
-    <label>kWh-prijs (€): <input name="kwhprijs" value="0.7" /></label><br/>
-    <label>Parkeertarief (€): <input name="parkeertarief" value="1" /></label><br/>
-    <label>Laadsessies per dag: <input name="laadsessies" value="2" /></label><br/>
-    <label>Kostprijs energie (€): <input name="kostprijsenergie" value="0.2" /></label><br/>
-    <label>Maandelijkse stijging (%): <input name="maandstijging" value="0.005" /></label><br/>
-    <label>Verbruik per sessie (kWh): <input name="verbruik_per_sessie" value="39" /></label><br/><br/>
-    <button type="button" onclick="bereken()">Start calculatie</button>
-  </form>
+<body>
+  <div class="container">
+    <div class="block">
+      <h2>Gegevens invoeren</h2>
+      <form id="form">
+        <label>Vermogen in kW:</label><input name="vermogen" value="80" />
+        <label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000" />
+        <label>Huurprijs (€):</label><input name="huurprijs" value="1095" />
+        <label>Huurprijs vanaf maand 61 (€):</label><input name="huurprijs_later" value="275" />
+        <label>Starttarief per laadsessie (€):</label><input name="starttarief" value="2" />
+        <label>kWh-Verkoopprijs (€):</label><input name="kwhprijs" value="0.7" />
+        <label>Parkeertarief (€):</label><input name="parkeertarief" value="1" />
+        <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
+        <label>Kostprijs aankoop energie (€):</label><input name="kostprijsenergie" value="0.2" />
+        <label>Gemiddelde maandelijkse stijging in laadsessies (%):</label><input name="maandstijging" value="0.5" />
+        <label>kWh verbruik per sessie:</label><input name="verbruik_per_sessie" value="39" />
+        <button type="button" onclick="bereken()">Start calculatie</button>
+      </form>
+    </div>
 
-  <h2>Resultaten</h2>
-  <div id="resultaat"></div>
-  <canvas id="barChart" height="100"></canvas>
-  <canvas id="lineChart" height="200"></canvas>
+    <div class="result block" id="resultaten" style="display:none">
+      <h2>Resultaten</h2>
+      <p>Omzet: <span id="omzet"></span></p>
+      <p>Energiekost: <span id="energiekost"></span></p>
+      <p>Capaciteitskost: <span id="capaciteitskost"></span></p>
+      <p>Huurprijs: <span id="huurprijs"></span></p>
+      <p>Verkochte hoeveelheid energie: <span id="energiehoeveelheid"></span></p>
+      <p>Terugverdentijd: <span id="terugverdentijd"></span></p>
+      <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span></p>
+      <canvas id="barChart" height="150"></canvas>
+      <canvas id="lineChart" height="250"></canvas>
+    </div>
+  </div>
 
   <script>
     async function bereken() {
-      const formData = new FormData(document.getElementById('bereken-form'));
-      const data = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, v.replace(',', '.')]));
-      const response = await fetch('/bereken', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      const res = await response.json();
+      const data = Object.fromEntries(
+        [...new FormData(document.getElementById("form")).entries()]
+          .map(([k, v]) => [k, v.replace(',', '.')])
+      );
 
-      document.getElementById('resultaat').innerHTML = `
-        Omzet: €${res.omzet}<br/>
-        Energiekost: €${res.energiekost}<br/>
-        Capaciteitskost: €${res.capaciteitskost}<br/>
-        Huur: €${res.huurprijs}<br/>
-        Verkochte energie: ${res.energiehoeveelheid} kWh<br/>
-        Terugverdentijd: ${res.terugverdentijd} maanden<br/>
-        Jaarlijks rendement: ${res.rendement_jaarlijks} %<br/>
-      `;
+      try {
+        const response = await fetch("/bereken", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
 
-      if (window.barChart) window.barChart.destroy();
-      window.barChart = new Chart(document.getElementById("barChart"), {
-        type: 'bar',
-        data: {
-          labels: ['Omzet', 'Energiekost', 'Capaciteit', 'Huur'],
-          datasets: [{
-            label: '€',
-            data: [res.omzet, res.energiekost, res.capaciteitskost, res.huurprijs],
-            backgroundColor: ['#66cc66', '#ff9966', '#9999ff', '#cccccc']
-          }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-      });
+        if (!response.ok) throw new Error("Server error: " + response.status);
+        const res = await response.json();
 
-      if (window.lineChart) window.lineChart.destroy();
-      window.lineChart = new Chart(document.getElementById("lineChart"), {
-        type: 'line',
-        data: {
-          labels: Array.from({ length: 144 }, (_, i) => i + 1),
-          datasets: [{
-            label: 'Cumulatief rendement (€)',
-            data: res.grafiek_data,
-            borderColor: '#3366cc',
-            fill: false,
-          }]
-        }
-      });
+        document.getElementById("resultaten").style.display = "block";
+        document.getElementById("omzet").textContent = res.omzet + ' €';
+        document.getElementById("energiekost").textContent = res.energiekost + ' €';
+        document.getElementById("capaciteitskost").textContent = res.capaciteitskost + ' €';
+        document.getElementById("huurprijs").textContent = res.huurprijs + ' €';
+        document.getElementById("energiehoeveelheid").textContent = res.energiehoeveelheid + ' kWh';
+        document.getElementById("terugverdentijd").textContent = res.terugverdentijd + ' maanden';
+        document.getElementById("jaarlijksrendement").textContent = res.rendement_jaarlijks + ' %';
+
+        if (window.barChart) window.barChart.destroy();
+        window.barChart = new Chart(document.getElementById("barChart"), {
+          type: 'bar',
+          data: {
+            labels: ['Omzet', 'Energiekost', 'Capaciteit', 'Huur'],
+            datasets: [{
+              label: '€',
+              data: [res.omzet, res.energiekost, res.capaciteitskost, res.huurprijs],
+              backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
+            }]
+          },
+          options: { responsive: true, plugins: { legend: { display: false } } }
+        });
+
+        if (window.lineChart) window.lineChart.destroy();
+        window.lineChart = new Chart(document.getElementById("lineChart"), {
+          type: 'line',
+          data: {
+            labels: Array.from({ length: 144 }, (_, i) => i + 1),
+            datasets: [{
+              label: 'Cumulatief rendement',
+              data: res.grafiek_data,
+              borderColor: '#005A00',
+              fill: false,
+            }]
+          },
+          options: { responsive: true, scales: { y: { beginAtZero: false } } }
+        });
+      } catch (error) {
+        alert("Fout bij berekening: " + error.message);
+        console.error(error);
+      }
     }
   </script>
 </body>
