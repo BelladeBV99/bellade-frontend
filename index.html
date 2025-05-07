@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bellade Tool (Basis)</title>
+  <title>Bellade Tool</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body style="font-family: sans-serif; background-color: #F5F5F5; padding: 40px; color: #333;">
-  <h1>Simpele Bellade-tool</h1>
+  <h1>Bellade Tool (Basis)</h1>
   <form id="bereken-form">
     <label>Vermogen (kW): <input name="vermogen" value="80" /></label><br/>
     <label>Opstartkost (€): <input name="opstartkost" value="15000" /></label><br/>
@@ -38,15 +38,15 @@
         body: JSON.stringify(data)
       });
       const res = await response.json();
-      const el = document.getElementById('resultaat');
-      el.innerHTML = `
+
+      document.getElementById('resultaat').innerHTML = `
         Omzet: €${res.omzet}<br/>
         Energiekost: €${res.energiekost}<br/>
         Capaciteitskost: €${res.capaciteitskost}<br/>
         Huur: €${res.huurprijs}<br/>
         Verkochte energie: ${res.energiehoeveelheid} kWh<br/>
         Terugverdentijd: ${res.terugverdentijd} maanden<br/>
-        Jaarlijks rendement: ${res.rendement_jaarlijks} %
+        Jaarlijks rendement: ${res.rendement_jaarlijks} %<br/>
       `;
 
       if (window.barChart) window.barChart.destroy();
