@@ -2,90 +2,187 @@
 <html lang="nl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bellade Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: #E3F9E0;
+      color: #005A00;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 40px;
+    }
+    .contact-btn {
+      background-color: #00FC63;
+      color: #000000;
+      font-family: 'Inter Black', sans-serif;
+      padding: 10px 20px;
+      border-radius: 16px;
+      text-decoration: none;
+      font-weight: 800;
+    }
+    section {
+      width: 70%;
+      margin: auto;
+      padding: 60px 0;
+    }
+    .block {
+      background-color: #FFFFFF;
+      padding: 30px;
+      border-radius: 24px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      margin-bottom: 40px;
+    }
+    .block label {
+      display: block;
+      font-weight: 600;
+      margin-top: 10px;
+      color: #005A00;
+    }
+    .block input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-top: 6px;
+    }
+    button {
+      background-color: #00FC63;
+      color: #000000;
+      font-weight: 800;
+      padding: 12px;
+      border: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      width: 100%;
+      margin-top: 20px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+    canvas {
+      background-color: #fff;
+      border-radius: 20px;
+      padding: 20px;
+    }
+    .result-block {
+      background-color: #373736;
+      border-radius: 24px;
+      color: #00FC63;
+      padding: 20px 40px;
+    }
+    .result-block h2 {
+      color: #00FC63;
+      font-weight: 800;
+    }
+  </style>
 </head>
 <body>
-  <form id="bereken-form">
-    <input name="vermogen" type="number" placeholder="Vermogen (kW)" value="80" />
-    <input name="opstartkost" type="number" placeholder="Opstartkost" value="15000" />
-    <input name="huurprijs" type="number" placeholder="Huurprijs" value="1095" />
-    <input name="huurprijs_later" type="number" placeholder="Huurprijs vanaf maand 61" value="275" />
-    <input name="starttarief" type="number" placeholder="Starttarief per sessie" value="2" />
-    <input name="kwhprijs" type="number" placeholder="kWh-Verkoopprijs" value="0.7" />
-    <input name="parkeertarief" type="number" placeholder="Parkeertarief" value="1" />
-    <input name="laadsessies" type="number" placeholder="Aantal laadsessies per dag" value="2" />
-    <input name="kostprijsenergie" type="number" placeholder="Kostprijs energie" value="0.2" />
-    <input name="maandstijging" type="number" placeholder="Gemiddelde maandelijkse stijging (%)" value="0.005" />
-    <input name="verbruik_per_sessie" type="number" placeholder="Verbruik per sessie (kWh)" value="39" />
-    <button type="button" onclick="berekenEnToonResultaten()">Start calculatie</button>
-  </form>
+  <header>
+    <img src="https://www.bellade.be/logo.png" alt="Bellade logo" height="50">
+    <a class="contact-btn" href="https://www.bellade.be/contact">Contacteer ons</a>
+  </header>
 
-  <div>
-    <p>Omzet: <span id="omzet"></span></p>
-    <p>Energiekost: <span id="energiekost"></span></p>
-    <p>Capaciteitskost: <span id="capaciteitskost"></span></p>
-    <p>Huurprijs: <span id="huurprijs"></span></p>
-    <p>Verkochte energie: <span id="energiehoeveelheid"></span></p>
-    <p>Terugverdentijd: <span id="terugverdentijd"></span></p>
-    <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span></p>
-  </div>
+  <section>
+    <div class="block">
+      <form id="form">
+        <label>Vermogen in kW:</label><input name="vermogen" value="80" />
+        <label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000" />
+        <label>Huurprijs (€):</label><input name="huurprijs" value="1095" />
+        <label>Huurprijs vanaf maand 61 (€):</label><input name="huurprijs_later" value="275" />
+        <label>Starttarief per laadsessie (€):</label><input name="starttarief" value="2" />
+        <label>kWh-Verkoopprijs (€):</label><input name="kwhprijs" value="0.7" />
+        <label>Parkeertarief (€):</label><input name="parkeertarief" value="1" />
+        <label>Gemiddelde aantal laadsessies per dag (Prognose):</label><input name="laadsessies" value="2" />
+        <label>Kostprijs aankoop energie (€):</label><input name="kostprijsenergie" value="0.2" />
+        <label>Gemiddelde maandelijkse stijging in laadsessies(%):</label><input name="maandstijging" value="0.005" />
+        <label>kWh verbruik per sessie:</label><input name="verbruik_per_sessie" value="39" />
+        <button type="button" onclick="bereken()">Start calculatie</button>
+      </form>
+    </div>
+  </section>
 
-  <canvas id="barChart" width="400" height="200"></canvas>
-  <canvas id="lineChart" width="600" height="300"></canvas>
+  <section>
+    <div class="result-block">
+      <h2>Resultaten</h2>
+      <p>Omzet: <span id="omzet"></span></p>
+      <p>Energiekost: <span id="energiekost"></span></p>
+      <p>Capaciteitskost: <span id="capaciteitskost"></span></p>
+      <p>Huurprijs: <span id="huurprijs"></span></p>
+      <p>Verkochte hoeveelheid energie: <span id="energiehoeveelheid"></span></p>
+      <p>Terugverdentijd: <span id="terugverdentijd"></span></p>
+      <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span></p>
+      <canvas id="barChart" height="150"></canvas>
+    </div>
+  </section>
+
+  <section>
+    <div class="result-block">
+      <h2>Rendementsevolutie</h2>
+      <canvas id="lineChart" height="250"></canvas>
+    </div>
+  </section>
 
   <script>
-  async function berekenEnToonResultaten() {
-    const formData = new FormData(document.getElementById('bereken-form'));
-    const data = Object.fromEntries(formData);
-    const response = await fetch('/bereken', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    const resultaat = await response.json();
+    async function bereken() {
+      const data = Object.fromEntries(
+        [...new FormData(document.getElementById("form")).entries()]
+        .map(([k, v]) => [k, v.replace(',', '.')])
+      );
+      const response = await fetch("/bereken", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const res = await response.json();
 
-    document.getElementById('omzet').textContent = resultaat.omzet + ' €';
-    document.getElementById('energiekost').textContent = resultaat.energiekost + ' €';
-    document.getElementById('capaciteitskost').textContent = resultaat.capaciteitskost + ' €';
-    document.getElementById('huurprijs').textContent = resultaat.huurprijs + ' €';
-    document.getElementById('energiehoeveelheid').textContent = resultaat.energiehoeveelheid + ' kWh';
-    document.getElementById('terugverdentijd').textContent = resultaat.terugverdentijd + ' maanden';
-    document.getElementById('jaarlijksrendement').textContent = resultaat.rendement_jaarlijks + ' %';
+      document.getElementById("omzet").textContent = res.omzet + ' €';
+      document.getElementById("energiekost").textContent = res.energiekost + ' €';
+      document.getElementById("capaciteitskost").textContent = res.capaciteitskost + ' €';
+      document.getElementById("huurprijs").textContent = res.huurprijs + ' €';
+      document.getElementById("energiehoeveelheid").textContent = res.energiehoeveelheid + ' kWh';
+      document.getElementById("terugverdentijd").textContent = res.terugverdentijd + ' maanden';
+      document.getElementById("jaarlijksrendement").textContent = res.rendement_jaarlijks + ' %';
 
-    if (window.barChart) window.barChart.destroy();
-    window.barChart = new Chart(document.getElementById('barChart'), {
-      type: 'bar',
-      data: {
-        labels: ['Omzet', 'Energiekost', 'Capaciteitskost', 'Huur'],
-        datasets: [{
-          label: 'Maand 1 (€)',
-          data: [resultaat.omzet, resultaat.energiekost, resultaat.capaciteitskost, resultaat.huurprijs],
-          backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
-        }]
-      },
-      options: { responsive: true, plugins: { legend: { display: false } } }
-    });
+      if (window.barChart) window.barChart.destroy();
+      window.barChart = new Chart(document.getElementById("barChart"), {
+        type: 'bar',
+        data: {
+          labels: ['Omzet', 'Energiekost', 'Capaciteit', 'Huur'],
+          datasets: [{
+            label: '€',
+            data: [res.omzet, res.energiekost, res.capaciteitskost, res.huurprijs],
+            backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
+          }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+      });
 
-    if (window.lineChart) window.lineChart.destroy();
-    window.lineChart = new Chart(document.getElementById('lineChart'), {
-      type: 'line',
-      data: {
-        labels: Array.from({ length: 144 }, (_, i) => i + 1),
-        datasets: [{
-          label: 'Cumulatief rendement (€)',
-          data: resultaat.grafiek_data,
-          borderColor: '#005A00',
-          fill: false
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: { y: { beginAtZero: false } }
-      }
-    });
-  }
+      if (window.lineChart) window.lineChart.destroy();
+      window.lineChart = new Chart(document.getElementById("lineChart"), {
+        type: 'line',
+        data: {
+          labels: Array.from({ length: 144 }, (_, i) => i + 1),
+          datasets: [{
+            label: 'Cumulatief rendement',
+            data: res.grafiek_data,
+            borderColor: '#005A00',
+            fill: false,
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: { y: { beginAtZero: false } }
+        }
+      });
+    }
   </script>
 </body>
 </html>
