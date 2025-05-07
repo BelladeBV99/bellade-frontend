@@ -98,7 +98,7 @@
       );
 
       try {
-const response = await fetch("https://bellade-tool.onrender.com/bereken", {
+        const response = await fetch("https://bellade-tool.onrender.com/bereken", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
@@ -116,7 +116,9 @@ const response = await fetch("https://bellade-tool.onrender.com/bereken", {
         document.getElementById("terugverdentijd").textContent = res.terugverdentijd + ' maanden';
         document.getElementById("jaarlijksrendement").textContent = res.rendement_jaarlijks + ' %';
 
-        if (window.barChart) window.barChart.destroy();
+        if (window.barChart instanceof Chart) {
+          window.barChart.destroy();
+        }
         window.barChart = new Chart(document.getElementById("barChart"), {
           type: 'bar',
           data: {
@@ -130,7 +132,9 @@ const response = await fetch("https://bellade-tool.onrender.com/bereken", {
           options: { responsive: true, plugins: { legend: { display: false } } }
         });
 
-        if (window.lineChart) window.lineChart.destroy();
+        if (window.lineChart instanceof Chart) {
+          window.lineChart.destroy();
+        }
         window.lineChart = new Chart(document.getElementById("lineChart"), {
           type: 'line',
           data: {
@@ -144,6 +148,7 @@ const response = await fetch("https://bellade-tool.onrender.com/bereken", {
           },
           options: { responsive: true, scales: { y: { beginAtZero: false } } }
         });
+
       } catch (error) {
         alert("Fout bij berekening: " + error.message);
         console.error(error);
