@@ -54,6 +54,12 @@
       padding: 20px;
       border-radius: 16px;
     }
+    small {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -70,7 +76,9 @@
         <label>Parkeertarief (€):</label><input name="parkeertarief" value="1" />
         <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
         <label>Kostprijs aankoop energie (€):</label><input name="kostprijsenergie" value="0.2" />
-        <label>Gemiddelde maandelijkse stijging in laadsessies (%):</label><input name="maandstijging" value="0.5" />
+        <label>Gemiddelde maandelijkse stijging in laadsessies (%):</label>
+        <input name="maandstijging" value="0.005" />
+        <small>Gebruik decimale notatie: 0.005 = 0.5% maandelijkse groei</small>
         <label>kWh verbruik per sessie:</label><input name="verbruik_per_sessie" value="39" />
         <button type="button" onclick="bereken()">Start calculatie</button>
       </form>
@@ -116,9 +124,7 @@
         document.getElementById("terugverdentijd").textContent = res.terugverdentijd + ' maanden';
         document.getElementById("jaarlijksrendement").textContent = res.rendement_jaarlijks + ' %';
 
-        if (window.barChart instanceof Chart) {
-          window.barChart.destroy();
-        }
+        if (window.barChart instanceof Chart) window.barChart.destroy();
         window.barChart = new Chart(document.getElementById("barChart"), {
           type: 'bar',
           data: {
@@ -132,9 +138,7 @@
           options: { responsive: true, plugins: { legend: { display: false } } }
         });
 
-        if (window.lineChart instanceof Chart) {
-          window.lineChart.destroy();
-        }
+        if (window.lineChart instanceof Chart) window.lineChart.destroy();
         window.lineChart = new Chart(document.getElementById("lineChart"), {
           type: 'line',
           data: {
