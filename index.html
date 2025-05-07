@@ -1,266 +1,91 @@
 <!DOCTYPE html>
-
 <html lang="nl">
 <head>
-<meta charset="utf-8"/>
-<title>Bellade – Invulpagina</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
-<style>
-    body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background-color: #E3F9E0;
-      color: #005A00;
-    }
-    .container {
-      max-width: 70%;
-      margin: 0 auto;
-      padding: 60px 20px;
-      display: flex;
-      gap: 30px;
-    }
-    .vak {
-      flex: 1;
-      background-color: #FFFFFF;
-      border-radius: 16px;
-      padding: 30px;
-    }
-    h2 {
-      font-size: 24px;
-      font-weight: 900;
-      margin-top: 0;
-      color: #005A00;
-    }
-    label {
-      display: block;
-      font-size: 15px;
-      font-weight: 500;
-      color: #005A00;
-      margin-bottom: 10px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      font-size: 15px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-    .submit-btn {
-      background-color: #00FC63;
-      color: #000000;
-      font-weight: 900;
-      font-size: 16px;
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      margin-top: 20px;
-      width: 100%;
-    }
-  
-    .donkergrijs {
-      background-color: #373736;
-      color: #00FC63;
-    }
-    .donkergrijs h2, .donkergrijs p, .donkergrijs span {
-      color: #00FC63;
-    }
-    
-    .groen {
-      background-color: #005A00;
-      color: #FFFFFF;
-    }
-    .groen h2, .groen p, .groen span {
-      color: #FFFFFF;
-    }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bellade Tool</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-<div class="container">
-<div class="vak">
-<h2>Invulgegevens</h2>
-<label>Vermogen in kW:
-        <input id="vermogen" type="number"/>
-</label>
-<label>Opstartkost in offerte (€):
-        <input id="opstartkost" type="number"/>
-</label>
-<label>Huurprijs (€):
-        <input id="huurprijs" type="number"/>
-</label>
-<label>Gemiddelde aantal laadsessies per dag (Prognose):
-        <input id="laadsessies" type="number"/>
-</label>
-<label>Gemiddelde maandelijkse stijging in laadsessies(%):
-        <input id="maandstijging" type="number"/>
-</label>
-</div>
-<div class="vak">
-<h2> </h2>
-<label>Starttarief per laadsessie (€):
-        <input id="starttarief" type="number"/>
-</label>
-<label>kWh-Verkoopprijs (€):
-        <input id="kwhprijs" type="number"/>
-</label>
-<label>Parkeertarief (€):
-        <input id="parkeertarief" type="number" value="1"/>
-</label>
-<label>Kostprijs aankoop energie (€):
-        <input id="kostprijsenergie" type="number"/>
-</label>
-<button class="submit-btn" onclick="bereken()">Start calculatie</button>
-</div>
-</div>
-<!-- Pagina 2 -->
-<div class="container" style="margin-top: 60px;">
-<div class="vak donkergrijs">
-<h2>Resultaten</h2>
-<p><strong>Energiekost:</strong> <span id="energiekost"></span></p>
-<p><strong>Capaciteitskost:</strong> <span id="capaciteitskost"></span></p>
-<p><strong>Huurprijs:</strong> <span id="huurprijs_result"></span></p>
-<p><strong>Omzet:</strong> <span id="omzet"></span></p>
-<p><strong>Verkochte hoeveelheid energie:</strong> <span id="energiehoeveelheid"></span></p>
-<canvas height="300" id="kostenOmzetChart" style="margin-top:40px;" width="800"></canvas>
-</div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-function toggleStandaardwaarden() {
-  const standaard = document.getElementById('standaardCheckbox').checked;
-  document.getElementById('vermogen').value = standaard ? 80 : '';
-  document.getElementById('opstartkost').value = standaard ? 15000 : '';
-  document.getElementById('huurprijs').value = standaard ? 1095 : '';
-  document.getElementById('laadsessies').value = standaard ? 2 : '';
-  document.getElementById('maandstijging').value = standaard ? 0.015 : '';
-  document.getElementById('starttarief').value = standaard ? 2 : '';
-  document.getElementById('kwhprijs').value = standaard ? 0.7 : '';
-  document.getElementById('parkeertarief').value = standaard ? 1 : '';
-  document.getElementById('kostprijsenergie').value = standaard ? 0.2 : '';
-}
+  <form id="bereken-form">
+    <input name="vermogen" type="number" placeholder="Vermogen (kW)" value="80" />
+    <input name="opstartkost" type="number" placeholder="Opstartkost" value="15000" />
+    <input name="huurprijs" type="number" placeholder="Huurprijs" value="1095" />
+    <input name="huurprijs_later" type="number" placeholder="Huurprijs vanaf maand 61" value="275" />
+    <input name="starttarief" type="number" placeholder="Starttarief per sessie" value="2" />
+    <input name="kwhprijs" type="number" placeholder="kWh-Verkoopprijs" value="0.7" />
+    <input name="parkeertarief" type="number" placeholder="Parkeertarief" value="1" />
+    <input name="laadsessies" type="number" placeholder="Aantal laadsessies per dag" value="2" />
+    <input name="kostprijsenergie" type="number" placeholder="Kostprijs energie" value="0.2" />
+    <input name="maandstijging" type="number" placeholder="Gemiddelde maandelijkse stijging (%)" value="0.005" />
+    <input name="verbruik_per_sessie" type="number" placeholder="Verbruik per sessie (kWh)" value="39" />
+    <button type="button" onclick="berekenEnToonResultaten()">Start calculatie</button>
+  </form>
 
+  <div>
+    <p>Omzet: <span id="omzet"></span></p>
+    <p>Energiekost: <span id="energiekost"></span></p>
+    <p>Capaciteitskost: <span id="capaciteitskost"></span></p>
+    <p>Huurprijs: <span id="huurprijs"></span></p>
+    <p>Verkochte energie: <span id="energiehoeveelheid"></span></p>
+    <p>Terugverdentijd: <span id="terugverdentijd"></span></p>
+    <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span></p>
+  </div>
 
+  <canvas id="barChart" width="400" height="200"></canvas>
+  <canvas id="lineChart" width="600" height="300"></canvas>
 
-    function formatEuro(value) {
-      return new Intl.NumberFormat('nl-BE', { style: 'currency', currency: 'EUR' }).format(value || 0);
-    }
-    function formatNumber(value) {
-      return parseFloat(value || 0).toFixed(2);
-    }
+  <script>
+  async function berekenEnToonResultaten() {
+    const formData = new FormData(document.getElementById('bereken-form'));
+    const data = Object.fromEntries(formData);
+    const response = await fetch('/bereken', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    const resultaat = await response.json();
 
-    async function bereken() {
-      const data = {
-        vermogen: parseFloat(document.getElementById('vermogen').value),
-        opstartkost: parseFloat(document.getElementById('opstartkost').value),
-        huurprijs: parseFloat(document.getElementById('huurprijs').value),
-        starttarief: parseFloat(document.getElementById('starttarief').value),
-        kwhprijs: parseFloat(document.getElementById('kwhprijs').value),
-        parkeertarief: parseFloat(document.getElementById('parkeertarief').value),
-        laadsessies: parseFloat(document.getElementById('laadsessies').value),
-        kostprijsenergie: parseFloat(document.getElementById('kostprijsenergie').value),
-        maandstijging: parseFloat(document.getElementById('maandstijging').value)
-      };
+    document.getElementById('omzet').textContent = resultaat.omzet + ' €';
+    document.getElementById('energiekost').textContent = resultaat.energiekost + ' €';
+    document.getElementById('capaciteitskost').textContent = resultaat.capaciteitskost + ' €';
+    document.getElementById('huurprijs').textContent = resultaat.huurprijs + ' €';
+    document.getElementById('energiehoeveelheid').textContent = resultaat.energiehoeveelheid + ' kWh';
+    document.getElementById('terugverdentijd').textContent = resultaat.terugverdentijd + ' maanden';
+    document.getElementById('jaarlijksrendement').textContent = resultaat.rendement_jaarlijks + ' %';
 
-      const response = await fetch('https://bellade-tool.onrender.com/bereken', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+    if (window.barChart) window.barChart.destroy();
+    window.barChart = new Chart(document.getElementById('barChart'), {
+      type: 'bar',
+      data: {
+        labels: ['Omzet', 'Energiekost', 'Capaciteitskost', 'Huur'],
+        datasets: [{
+          label: 'Maand 1 (€)',
+          data: [resultaat.omzet, resultaat.energiekost, resultaat.capaciteitskost, resultaat.huurprijs],
+          backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
+        }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
 
-      const result = await response.json();
-
-      document.getElementById("energiekost").innerText = formatEuro(result.energiekost);
-      document.getElementById("capaciteitskost").innerText = formatEuro(result.capaciteitskost);
-      document.getElementById("huurprijs_result").innerText = formatEuro(result.huurprijs);
-      document.getElementById("omzet").innerText = formatEuro(result.omzet);
-      document.getElementById("energiehoeveelheid").innerText = formatNumber(result.energiehoeveelheid) + " kWh";
-
-      const ctxBar = document.getElementById("kostenOmzetChart").getContext("2d");
-      new Chart(ctxBar, {
-        type: 'bar',
-        data: {
-          labels: ["Omzet", "Capaciteitskost", "Energiekost", "Huurprijs"],
-          datasets: [{
-            label: "Maand 1",
-            data: [
-              result.omzet,
-              -result.capaciteitskost,
-              -result.energiekost,
-              -result.huurprijs
-            ],
-            backgroundColor: [
-              "green", "red", "red", "red"
-            ]
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              title: { display: true, text: "€" },
-              beginAtZero: true
-            }
-          }
-        }
-      });
-
-      // Vul kernresultaten in
-      document.getElementById("maand61").innerText = formatEuro(result.rendement_maand_61);
-      document.getElementById("jaar12").innerText = formatEuro(result.rendement_12jaar);
-      document.getElementById("verlies").innerText = formatEuro(result.max_verlies);
-      document.getElementById("rendementJaar").innerText = formatNumber(result.rendement_jaarlijks) + "%";
-      document.getElementById("terugverdientijd").innerText = result.terugverdentijd + " maanden";
-
-      // Maak lijn-grafiek
-      const ctxLine = document.getElementById("rendementGrafiek").getContext("2d");
-      new Chart(ctxLine, {
-        type: 'line',
-        data: {
-          labels: Array.from({length: result.grafiek_data.length}, (_, i) => "Maand " + (i + 1)),
-          datasets: [{
-            label: "Cumulatief rendement",
-            data: result.grafiek_data,
-            borderColor: "#00FC63",
-            backgroundColor: "transparent",
-            fill: false,
-            tension: 0.1
-          }]
-        },
-        options: {
-          responsive: true,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              title: { display: true, text: "€" }
-            },
-            x: {
-              title: { display: true, text: "Maand" }
-            }
-          }
-        }
-      });
-
-    }
+    if (window.lineChart) window.lineChart.destroy();
+    window.lineChart = new Chart(document.getElementById('lineChart'), {
+      type: 'line',
+      data: {
+        labels: Array.from({ length: 144 }, (_, i) => i + 1),
+        datasets: [{
+          label: 'Cumulatief rendement (€)',
+          data: resultaat.grafiek_data,
+          borderColor: '#005A00',
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: { y: { beginAtZero: false } }
+      }
+    });
+  }
   </script>
-<!-- Pagina 3 -->
-<div class="container" style="margin-top: 60px;">
-<div class="vak groen">
-<h2>Rendementsoverzicht</h2>
-<canvas height="300" id="rendementGrafiek" style="margin-top:20px;" width="800"></canvas>
-<div style="margin-top: 40px;">
-<p><strong>Rendement maand 61:</strong> <span id="maand61"></span></p>
-<p><strong>Rendement 12 jaar:</strong> <span id="jaar12"></span></p>
-<p><strong>Max verlies:</strong> <span id="verlies"></span></p>
-<p><strong>Jaarlijks rendement:</strong> <span id="rendementJaar"></span></p>
-<p><strong>Terugverdientijd:</strong> <span id="terugverdientijd"></span></p>
-</div>
-</div>
-</div>
 </body>
 </html>
