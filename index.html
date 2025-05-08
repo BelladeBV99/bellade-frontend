@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Bellade Rendementstool</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -12,21 +12,20 @@
       margin: 0;
       background-color: #FFFFFF;
       color: #005A00;
-      scroll-behavior: smooth;
     }
 
-    .page-section {
+    section {
       padding: 40px 5%;
       min-height: 100vh;
     }
 
-    .section-title {
+    h1 {
       font-size: 24px;
       font-weight: 600;
       margin-bottom: 20px;
     }
 
-    .input-form {
+    form {
       display: flex;
       justify-content: space-between;
       gap: 20px;
@@ -54,10 +53,10 @@
       font-size: 16px;
     }
 
-    .field-note {
+    .note {
       font-size: 12px;
       color: #777;
-      margin-top: 5px;
+      margin-top: 4px;
     }
 
     .button-wrapper {
@@ -65,7 +64,7 @@
       text-align: center;
     }
 
-    .calculate-button {
+    button {
       background-color: #00FC63;
       color: #000000;
       font-family: 'Inter Black', sans-serif;
@@ -93,61 +92,59 @@
 </head>
 <body>
 
-  <!-- Pagina 1 – Input -->
-  <section id="input-section" class="page-section">
-    <h1 class="section-title">Voer je parameters in</h1>
-
-    <form id="input-form" class="input-form">
+  <!-- Pagina 1 -->
+  <section>
+    <h1>Voer je parameters in</h1>
+    <form id="input-form">
       <!-- Kolom 1 -->
       <div class="input-column">
         <label>Opstartkost in offerte (€)
-          <input type="number" step="0.01" name="opstartkost" value="10000" required>
+          <input type="number" name="opstartkost" value="10000" required>
         </label>
         <label>Huurprijs in offerte (€)
-          <input type="number" step="0.01" name="huurprijs" value="1250" required>
+          <input type="number" name="huurprijs" value="1250" required>
         </label>
         <label>Vermogen snellader in offerte (kW)
-          <input type="number" step="0.1" name="vermogen" value="150" required>
+          <input type="number" name="vermogen" value="150" required>
         </label>
       </div>
 
       <!-- Kolom 2 -->
       <div class="input-column">
         <label>Starttarief laadsessie (€)
-          <input type="number" step="0.01" name="starttarief" value="2.5" required>
+          <input type="number" name="starttarief" value="2.5" required>
         </label>
         <label>Verkoopprijs kWh (€)
-          <input type="number" step="0.01" name="kwhprijs" value="0.65" required>
+          <input type="number" name="kwhprijs" value="0.65" required>
         </label>
         <label>Parkeertarief na laadsessie (€/u)
-          <input type="number" step="0.01" name="parkeertarief" value="1.5" required>
+          <input type="number" name="parkeertarief" value="1.5" required>
         </label>
         <label>Eigen aankoopprijs energie (€/kWh)
-          <input type="number" step="0.01" name="kostprijsenergie" value="0.20" required>
-          <small class="field-note">zonder nettarieven, gemiddeld €0,20/kWh</small>
+          <input type="number" name="kostprijsenergie" value="0.20" required>
+          <div class="note">zonder nettarieven, gemiddeld €0,20/kWh</div>
         </label>
       </div>
 
       <!-- Kolom 3 -->
       <div class="input-column">
         <label>Gemiddeld aantal laadsessies per dag
-          <input type="number" step="1" name="laadsessies" value="20" required>
+          <input type="number" name="laadsessies" value="20" required>
         </label>
         <label>Gemiddelde maandelijkse stijging in #laadsessies (%)
           <input type="number" step="0.1" name="maandstijging" value="2.5" required>
-          <small class="field-note">decimalen mogelijk, bv. 3,5</small>
+          <div class="note">decimalen mogelijk, bv. 3,5</div>
         </label>
       </div>
     </form>
-
     <div class="button-wrapper">
-      <button type="submit" form="input-form" class="calculate-button">Bereken rendement</button>
+      <button type="submit" form="input-form">Bereken rendement</button>
     </div>
   </section>
 
-  <!-- Pagina 2 – Resultaten -->
-  <section id="results-section" class="page-section">
-    <h1 class="section-title">Resultaten</h1>
+  <!-- Pagina 2 -->
+  <section>
+    <h1>Resultaten</h1>
     <div class="result-box" id="result-omzet"></div>
     <div class="result-box" id="result-kost"></div>
     <div class="result-box" id="result-terugverdientijd"></div>
@@ -155,14 +152,13 @@
     <div class="result-box" id="result-max-verlies"></div>
   </section>
 
-  <!-- Pagina 3 – Grafieken -->
-  <section id="charts-section" class="page-section">
-    <h1 class="section-title">Rendementsgrafieken</h1>
+  <!-- Pagina 3 -->
+  <section>
+    <h1>Rendementsgrafieken</h1>
     <canvas id="barChart"></canvas>
     <canvas id="lineChart"></canvas>
   </section>
 
-  <!-- Inline script -->
   <script>
     document.getElementById("input-form").addEventListener("submit", async function (e) {
       e.preventDefault();
@@ -170,60 +166,46 @@
       const formData = new FormData(e.target);
       const data = Object.fromEntries(formData.entries());
 
-      // Voeg vaste waarden toe
+      // vaste waarden toevoegen
       data.huurprijs_later = 275;
       data.verbruik_per_sessie = 39;
 
       try {
-        const response = await fetch("https://bellade-tool.onrender.com/bereken", {
+        const res = await fetch("https://bellade-tool.onrender.com/bereken", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
 
-        if (!response.ok) {
-          throw new Error("Serverfout: " + response.status);
-        }
+        if (!res.ok) throw new Error("Backend error: " + res.status);
+        const r = await res.json();
 
-        const result = await response.json();
+        document.getElementById("result-omzet").textContent = "Omzet: € " + r.omzet;
+        document.getElementById("result-kost").textContent = "Kosten: € " + r.energiekost + " (energie) + € " + r.capaciteitskost + " (capaciteit) + € " + r.huurprijs + " (huur)";
+        document.getElementById("result-terugverdientijd").textContent = "Terugverdientijd: " + r.terugverdentijd + " maanden";
+        document.getElementById("result-jaarrendement").textContent = "Jaarlijks rendement: " + r.rendement_jaarlijks + " %";
+        document.getElementById("result-max-verlies").textContent = "Maximaal verlies: € " + r.max_verlies;
 
-        // Tekstresultaten tonen
-        document.getElementById("result-omzet").textContent = "Omzet: € " + result.omzet;
-        document.getElementById("result-kost").textContent = "Kosten: € " + result.energiekost + " (energie) + € " + result.capaciteitskost + " (capaciteit) + € " + result.huurprijs + " (huur)";
-        document.getElementById("result-terugverdientijd").textContent = "Terugverdientijd: " + result.terugverdentijd + " maanden";
-        document.getElementById("result-jaarrendement").textContent = "Jaarlijks rendement: " + result.rendement_jaarlijks + " %";
-        document.getElementById("result-max-verlies").textContent = "Maximaal verlies: € " + result.max_verlies;
-
-        // Grafieken tekenen
-        const barCtx = document.getElementById("barChart").getContext("2d");
-        new Chart(barCtx, {
+        new Chart(document.getElementById("barChart"), {
           type: "bar",
           data: {
-            labels: Array.from({ length: 12 }, (_, i) => `Maand ${i + 1}`),
-            datasets: [{
-              label: "Maandelijks rendement",
-              data: result.grafiek_data.slice(0, 12)
-            }]
+            labels: Array.from({ length: 12 }, (_, i) => "Maand " + (i + 1)),
+            datasets: [{ label: "Maandelijks rendement", data: r.grafiek_data.slice(0, 12) }]
           }
         });
 
-        const lineCtx = document.getElementById("lineChart").getContext("2d");
-        new Chart(lineCtx, {
+        new Chart(document.getElementById("lineChart"), {
           type: "line",
           data: {
-            labels: Array.from({ length: 144 }, (_, i) => `Maand ${i + 1}`),
-            datasets: [{
-              label: "Cumulatief rendement",
-              data: result.grafiek_data
-            }]
+            labels: Array.from({ length: 144 }, (_, i) => "Maand " + (i + 1)),
+            datasets: [{ label: "Cumulatief rendement", data: r.grafiek_data }]
           }
         });
 
         // Scroll naar resultaten
-        document.getElementById("results-section").scrollIntoView({ behavior: "smooth" });
-
-      } catch (error) {
-        alert("Fout tijdens berekening: " + error.message);
+        document.getElementById("result-omzet").scrollIntoView({ behavior: "smooth" });
+      } catch (err) {
+        alert("Fout: " + err.message);
       }
     });
   </script>
