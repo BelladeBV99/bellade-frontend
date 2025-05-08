@@ -90,6 +90,16 @@
       min-width: 280px;
     }
 
+    .vergelijk-blok p {
+      margin: 4px 0;
+    }
+
+    .vergelijk-blok p:last-child {
+      margin-top: 12px;
+      font-weight: 800;
+      font-size: 1.1em;
+    }
+
     .kerncijfers {
       display: flex;
       flex-wrap: wrap;
@@ -106,19 +116,25 @@
       padding: 10px;
       text-align: center;
       box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-      font-weight: 600;
+      font-weight: 500;
       min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
 
     .kerncijfer-item span {
-      display: block;
-      font-size: 20px;
+      font-size: 22px;
       font-weight: 800;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     #lineChart {
       max-height: 220px !important;
+    }
+
+    .chartjs-y-axis line {
+      stroke-width: 2px !important;
     }
   </style>
 </head>
@@ -136,7 +152,6 @@
           <div class="form-column">
             <label>Starttarief laadsessie (€):</label><input name="starttarief" value="2" />
             <label>Verkoopprijs kWh (€):</label><input name="kwhprijs" value="0.7" />
-            <label>Parkeertarief na laadsessie (€/u):</label><input name="parkeertarief" value="1" />
             <label>Eigen aankoopprijs energie (€/kWh):</label><input name="kostprijsenergie" value="0.2" />
           </div>
           <div class="form-column">
@@ -155,7 +170,7 @@
         <p>Energiekost: <span id="m1_energiekost"></span> €</p>
         <p>Capaciteitstarief: <span id="m1_capaciteit"></span> €</p>
         <p>Huurprijs: <span id="m1_huur"></span> €</p>
-        <p>Netto rendement: <span id="m1_rendement"></span> €</p>
+        <p><strong>Netto rendement: <span id="m1_rendement"></span> €</span></strong></p>
         <canvas id="chart_m1" height="180"></canvas>
       </div>
       <div class="vergelijk-blok">
@@ -164,7 +179,7 @@
         <p>Energiekost: <span id="m36_energiekost"></span> €</p>
         <p>Capaciteitstarief: <span id="m36_capaciteit"></span> €</p>
         <p>Huurprijs: <span id="m36_huur"></span> €</p>
-        <p>Netto rendement: <span id="m36_rendement"></span> €</p>
+        <p><strong>Netto rendement: <span id="m36_rendement"></span> €</span></strong></p>
         <canvas id="chart_m36" height="180"></canvas>
       </div>
       <div class="vergelijk-blok">
@@ -173,7 +188,7 @@
         <p>Energiekost: <span id="m72_energiekost"></span> €</p>
         <p>Capaciteitstarief: <span id="m72_capaciteit"></span> €</p>
         <p>Huurprijs: <span id="m72_huur"></span> €</p>
-        <p>Netto rendement: <span id="m72_rendement"></span> €</p>
+        <p><strong>Netto rendement: <span id="m72_rendement"></span> €</span></strong></p>
         <canvas id="chart_m72" height="180"></canvas>
       </div>
     </div>
@@ -182,30 +197,42 @@
       <h2>Overzicht op lange termijn</h2>
       <div class="kerncijfers">
         <div class="kerncijfer-item">
-          Max. verlies <span id="kern_max_verlies">-</span>
+          Maximale negatieve positie
+          <span id="kern_max_verlies">-</span>
         </div>
         <div class="kerncijfer-item">
-          Rendement maand 61 <span id="kern_rendement_61">-</span>
+          Rendement maand 61
+          <span id="kern_rendement_61">-</span>
         </div>
         <div class="kerncijfer-item">
-          Jaarlijks rendement <span id="kern_rendement_jaarlijks">-</span>
+          Jaarlijks rendement
+          <span id="kern_rendement_jaarlijks">-</span>
         </div>
         <div class="kerncijfer-item">
-          Terugverdentijd <span id="kern_terugverdentijd">-</span>
+          Terugverdentijd
+          <span id="kern_terugverdentijd">-</span>
         </div>
         <div class="kerncijfer-item">
-          Rendement na 12 jaar <span id="kern_rendement_12jaar">-</span>
+          Rendement na 12 jaar
+          <span id="kern_rendement_12jaar">-</span>
         </div>
       </div>
       <canvas id="lineChart" height="220"></canvas>
     </div>
   </div>
 <script>
+  function formatEuro(getal) {
+    return parseFloat(getal).toFixed(2)
+      .replace('.', ',')                // komma als decimaal
+      .replace(/\B(?=(\d{3})+(?!\d))/g, '.'); // punt als duizendtalscheiding
+  }
+
   async function bereken() {
     const formData = new FormData(document.getElementById("form"));
     const data = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, v.replace(',', '.')]));
     data["huurprijs_later"] = 275;
     data["verbruik_per_sessie"] = 39;
+    data["parkeertarief"] = 1;
 
     try {
       const response = await fetch("https://bellade-tool.onrender.com/bereken", {
@@ -217,15 +244,15 @@
       const res = await response.json();
       const parseNum = (v) => parseFloat(v);
 
-      // Kernresultaten (pagina 3)
+      // Resultaten kerncijfers
       document.getElementById("overzichtBlok").style.display = "block";
-      document.getElementById("kern_max_verlies").textContent = res.max_verlies + ' €';
-      document.getElementById("kern_rendement_61").textContent = res.rendement_maand_61 + ' €';
-      document.getElementById("kern_rendement_jaarlijks").textContent = res.rendement_jaarlijks + ' %';
+      document.getElementById("kern_max_verlies").textContent = formatEuro(res.max_verlies) + ' €';
+      document.getElementById("kern_rendement_61").textContent = formatEuro(res.rendement_maand_61) + ' €';
+      document.getElementById("kern_rendement_jaarlijks").textContent = formatEuro(res.rendement_jaarlijks) + ' %';
       document.getElementById("kern_terugverdentijd").textContent = res.terugverdentijd + ' maanden';
-      document.getElementById("kern_rendement_12jaar").textContent = res.rendement_12jaar + ' €';
+      document.getElementById("kern_rendement_12jaar").textContent = formatEuro(res.rendement_12jaar) + ' €';
 
-      // LineChart: cumulatief resultaat
+      // LineChart destroy + build
       const canvas = document.getElementById("lineChart");
       if (window.lineChart && typeof window.lineChart.destroy === "function") {
         window.lineChart.destroy();
@@ -245,7 +272,12 @@
         },
         options: {
           responsive: true,
-          scales: { y: { beginAtZero: false } },
+          scales: {
+            y: {
+              beginAtZero: false,
+              grid: { color: "#ccc", lineWidth: ctx => ctx.tick.value === 0 ? 2 : 1 }
+            }
+          },
           plugins: {
             legend: { display: false },
             annotation: {
@@ -259,7 +291,7 @@
                   borderWidth: 2,
                   label: {
                     display: true,
-                    content: 'Max verlies',
+                    content: 'Maximale negatieve positie',
                     color: '#FF0000',
                     position: 'start',
                     backgroundColor: 'transparent'
@@ -286,7 +318,7 @@
         }
       });
 
-      // Maandvergelijkingen tonen
+      // Maandvergelijking
       document.getElementById("vergelijkingBlok").style.display = "flex";
       if (!window.vergelijkCharts) window.vergelijkCharts = {};
       const maanden = [0, 35, 71];
@@ -296,18 +328,18 @@
         const sessies = res.sessies_rij[m];
         const sessies_maand = sessies * 30;
         const energie = sessies_maand * 39;
-        const omz = sessies_maand * 39 * parseNum(data.kwhprijs) + (parseNum(data.starttarief) + parseNum(data.parkeertarief)) * sessies_maand;
+        const omz = sessies_maand * 39 * parseNum(data.kwhprijs) + (parseNum(data.starttarief) + 1) * sessies_maand;
         const ek = energie * parseNum(data.kostprijsenergie);
         const cap = energie > ((50 * parseNum(data.vermogen)) / 12) / 0.35 ? ((50 * parseNum(data.vermogen)) / 12) : energie * 0.35;
         const hr = m < 60 ? parseNum(data.huurprijs) : 275;
         const winst = omz - ek - cap - hr;
 
         const id = ids[i];
-        document.getElementById(`${id}_omzet`).textContent = omz.toFixed(2);
-        document.getElementById(`${id}_energiekost`).textContent = ek.toFixed(2);
-        document.getElementById(`${id}_capaciteit`).textContent = cap.toFixed(2);
-        document.getElementById(`${id}_huur`).textContent = hr.toFixed(2);
-        document.getElementById(`${id}_rendement`).textContent = winst.toFixed(2);
+        document.getElementById(`${id}_omzet`).textContent = formatEuro(omz);
+        document.getElementById(`${id}_energiekost`).textContent = formatEuro(ek);
+        document.getElementById(`${id}_capaciteit`).textContent = formatEuro(cap);
+        document.getElementById(`${id}_huur`).textContent = formatEuro(hr);
+        document.getElementById(`${id}_rendement`).textContent = formatEuro(winst);
 
         const canvas = document.getElementById(`chart_${id}`);
         if (window.vergelijkCharts[id]) window.vergelijkCharts[id].destroy();
@@ -322,7 +354,19 @@
               backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
             }]
           },
-          options: { responsive: true, plugins: { legend: { display: false } } }
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: {
+                ticks: {
+                  callback: function(value) {
+                    return formatEuro(value);
+                  }
+                }
+              }
+            }
+          }
         });
       });
 
