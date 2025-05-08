@@ -71,11 +71,11 @@
     .form-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 20px;
+      gap: 40px; /* vergrote spacing tussen kolommen */
     }
 
     .form-column {
-      flex: 1 1 calc(33.333% - 20px);
+      flex: 1 1 calc(33.333% - 40px);
       min-width: 240px;
     }
 
@@ -93,19 +93,20 @@
       <form id="form">
         <div class="form-grid">
           <div class="form-column">
-            <label>Vermogen in kW:</label><input name="vermogen" value="80" />
-            <label>Starttarief per laadsessie (€):</label><input name="starttarief" value="2" />
-            <label>Parkeertarief (€):</label><input name="parkeertarief" value="1" />
-          </div>
-          <div class="form-column">
             <label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000" />
-            <label>kWh-Verkoopprijs (€):</label><input name="kwhprijs" value="0.7" />
-            <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
+            <label>Huurprijs in offerte (€):</label><input name="huurprijs" value="1095" />
+            <label>Vermogen snellader in offerte (kW):</label><input name="vermogen" value="80" />
           </div>
           <div class="form-column">
-            <label>Huurprijs (€):</label><input name="huurprijs" value="1095" />
-            <label>Kostprijs aankoop energie (€):</label><input name="kostprijsenergie" value="0.2" />
-            <label>Gemiddelde maandelijkse stijging in laadsessies (%):</label>
+            <label>Starttarief laadsessie (€):</label><input name="starttarief" value="2" />
+            <label>Verkoopprijs kWh (€):</label><input name="kwhprijs" value="0.7" />
+            <label>Parkeertarief na laadsessie (€/u):</label><input name="parkeertarief" value="1" />
+            <label>Eigen aankoopprijs energie (€/kWh) (zonder nettarieven, gemiddeld €0,20/kWh):</label>
+            <input name="kostprijsenergie" value="0.2" />
+          </div>
+          <div class="form-column">
+            <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
+            <label>Gemiddelde maandelijkse stijging in #laadsessies (%):</label>
             <input name="maandstijging" value="0.005" />
             <small>Gebruik decimale notatie: 0.005 = 0.5% maandelijkse groei</small>
           </div>
