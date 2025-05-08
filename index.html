@@ -215,6 +215,28 @@
         max-height: 250px !important;
       }
     }
+    @media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .block, .vergelijking-grid, .kerncijfers {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    break-after: auto;
+  }
+
+  canvas {
+    display: none !important;
+  }
+
+  .chart-img {
+    display: block !important;
+    width: 100%;
+    margin-top: 10px;
+  }
+}
   </style>
 </head>
 <body>
@@ -437,20 +459,34 @@
       }
     }
 
-    function downloadPDF() {
-      window.scrollTo(0, 0);
-      document.getElementById("vergelijkingBlok").style.display = "flex";
-      document.getElementById("overzichtBlok").style.display = "block";
+function downloadPDF() {
+  window.scrollTo(0, 0);
+  document.getElementById("vergelijkingBlok").style.display = "flex";
+  document.getElementById("overzichtBlok").style.display = "block";
 
-      const element = document.getElementById('pdfContent');
-      const opt = {
-        margin: 0.3,
-        filename: 'bellade-simulatie.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, scrollY: 0 },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-      };
-      html2pdf().set(opt).from(element).save();
+  const canvases = document.querySelectorAll("canvas");
+  canvases.forEach(canvas => {
+    const img = document.createElement("img");
+    img.src = canvas.toDataURL("image/png");
+    img.className = "chart-img";
+    canvas.style.display = "none";
+    canvas.parentNode.insertBefore(img, canvas.nextSibling);
+  });
+
+  const element = document.getElementById('pdfContent');
+  const opt = {
+    margin: 0.3,
+    filename: 'bellade-simulatie.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2, scrollY: 0 },
+    jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(element).save().then(() => {
+    document.querySelectorAll("canvas").forEach(c => c.style.display = "block");
+    document.querySelectorAll(".chart-img").forEach(i => i.remove());
+  });
+}
     }
   </script>
 </body>
