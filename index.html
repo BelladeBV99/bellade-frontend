@@ -71,7 +71,7 @@
     .form-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 40px; /* vergrote spacing tussen kolommen */
+      gap: 40px;
     }
 
     .form-column {
@@ -83,6 +83,30 @@
       .form-column {
         flex: 1 1 100%;
       }
+    }
+
+    .vergelijking-grid {
+      display: flex;
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .vergelijk-blok {
+      flex: 1;
+      background-color: #fff;
+      color: #005A00;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .vergelijk-blok h3 {
+      margin-top: 0;
+    }
+
+    .vergelijk-blok canvas {
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -114,7 +138,6 @@
         <button type="button" onclick="bereken()">Start calculatie</button>
       </form>
     </div>
-
     <div class="result block" id="resultaten" style="display:none">
       <h2>Resultaten</h2>
       <p>Omzet: <span id="omzet"></span></p>
@@ -130,15 +153,41 @@
       <canvas id="barChart" height="150"></canvas>
       <canvas id="lineChart" height="250"></canvas>
     </div>
-  </div>
 
+    <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;">
+      <div class="vergelijk-blok">
+        <h3>Maand 1</h3>
+        <p>Omzet: <span id="m1_omzet"></span> €</p>
+        <p>Energiekost: <span id="m1_energiekost"></span> €</p>
+        <p>Capaciteitstarief: <span id="m1_capaciteit"></span> €</p>
+        <p>Huurprijs: <span id="m1_huur"></span> €</p>
+        <p>Netto rendement: <span id="m1_rendement"></span> €</p>
+        <canvas id="chart_m1" height="180"></canvas>
+      </div>
+      <div class="vergelijk-blok">
+        <h3>Maand 36</h3>
+        <p>Omzet: <span id="m36_omzet"></span> €</p>
+        <p>Energiekost: <span id="m36_energiekost"></span> €</p>
+        <p>Capaciteitstarief: <span id="m36_capaciteit"></span> €</p>
+        <p>Huurprijs: <span id="m36_huur"></span> €</p>
+        <p>Netto rendement: <span id="m36_rendement"></span> €</p>
+        <canvas id="chart_m36" height="180"></canvas>
+      </div>
+      <div class="vergelijk-blok">
+        <h3>Maand 72</h3>
+        <p>Omzet: <span id="m72_omzet"></span> €</p>
+        <p>Energiekost: <span id="m72_energiekost"></span> €</p>
+        <p>Capaciteitstarief: <span id="m72_capaciteit"></span> €</p>
+        <p>Huurprijs: <span id="m72_huur"></span> €</p>
+        <p>Netto rendement: <span id="m72_rendement"></span> €</p>
+        <canvas id="chart_m72" height="180"></canvas>
+      </div>
+    </div>
+  </div>
   <script>
     async function bereken() {
-      const data = Object.fromEntries(
-        [...new FormData(document.getElementById("form")).entries()]
-          .map(([k, v]) => [k, v.replace(',', '.')])
-      );
-
+      const formData = new FormData(document.getElementById("form"));
+      const data = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, v.replace(',', '.')]));
       data["huurprijs_later"] = 275;
       data["verbruik_per_sessie"] = 39;
 
@@ -149,8 +198,8 @@
           body: JSON.stringify(data)
         });
 
-        if (!response.ok) throw new Error("Server error: " + response.status);
         const res = await response.json();
+        const parseNum = (v) => parseFloat(v);
 
         document.getElementById("resultaten").style.display = "block";
         document.getElementById("omzet").textContent = res.omzet + ' €';
@@ -192,6 +241,41 @@
           },
           options: { responsive: true, scales: { y: { beginAtZero: false } } }
         });
+
+        // Vergelijking maand 1, 36, 72
+        const maanden = [0, 35, 71];
+        const ids = ['m1', 'm36', 'm72'];
+        maanden.forEach((m, i) => {
+          const sessies = res.sessies_rij[m];
+          const sessies_maand = sessies * 30;
+          const energie = sessies_maand * 39;
+          const omz = sessies_maand * 39 * parseNum(data.kwhprijs) + (parseNum(data.starttarief) + parseNum(data.parkeertarief)) * sessies_maand;
+          const ek = energie * parseNum(data.kostprijsenergie);
+          const cap = energie > ((50 * parseNum(data.vermogen)) / 12) / 0.35 ? ((50 * parseNum(data.vermogen)) / 12) : energie * 0.35;
+          const hr = m < 60 ? parseNum(data.huurprijs) : 275;
+          const winst = omz - ek - cap - hr;
+
+          document.getElementById(`${ids[i]}_omzet`).textContent = omz.toFixed(2);
+          document.getElementById(`${ids[i]}_energiekost`).textContent = ek.toFixed(2);
+          document.getElementById(`${ids[i]}_capaciteit`).textContent = cap.toFixed(2);
+          document.getElementById(`${ids[i]}_huur`).textContent = hr.toFixed(2);
+          document.getElementById(`${ids[i]}_rendement`).textContent = winst.toFixed(2);
+
+          new Chart(document.getElementById(`chart_${ids[i]}`), {
+            type: 'bar',
+            data: {
+              labels: ['Omzet', 'Energiekost', 'Capaciteit', 'Huur'],
+              datasets: [{
+                label: '€',
+                data: [omz, ek, cap, hr],
+                backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
+              }]
+            },
+            options: { responsive: true, plugins: { legend: { display: false } } }
+          });
+        });
+
+        document.getElementById("vergelijkingBlok").style.display = "flex";
 
       } catch (error) {
         alert("Fout bij berekening: " + error.message);
