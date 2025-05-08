@@ -55,13 +55,6 @@
       cursor: pointer;
     }
 
-    .result {
-      background-color: #373736;
-      color: #00FC63;
-      padding: 20px;
-      border-radius: 16px;
-    }
-
     small {
       display: block;
       font-size: 12px;
@@ -84,6 +77,48 @@
       .form-column {
         flex: 1 1 100%;
       }
+    }
+
+    .vergelijk-blok {
+      flex: 1;
+      background-color: #fff;
+      color: #005A00;
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      font-family: 'Inter', sans-serif;
+      min-width: 280px;
+    }
+
+    .kerncijfers {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .kerncijfer-item {
+      flex: 1;
+      background-color: #fff;
+      color: #005A00;
+      border-radius: 16px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      font-weight: 600;
+      min-width: 150px;
+    }
+
+    .kerncijfer-item span {
+      display: block;
+      font-size: 20px;
+      font-weight: 800;
+      margin-top: 4px;
+    }
+
+    #lineChart {
+      max-height: 220px !important;
     }
   </style>
 </head>
@@ -113,21 +148,6 @@
         <button type="button" onclick="bereken()">Start calculatie</button>
       </form>
     </div>
-    <div class="result block" id="resultaten" style="display:none">
-      <h2>Resultaten</h2>
-      <p>Omzet: <span id="omzet"></span> €</p>
-      <p>Energiekost: <span id="energiekost"></span> €</p>
-      <p>Capaciteitskost: <span id="capaciteitskost"></span> €</p>
-      <p>Huurprijs: <span id="huurprijs"></span> €</p>
-      <p>Verkochte hoeveelheid energie: <span id="energiehoeveelheid"></span> kWh</p>
-      <p>Terugverdentijd: <span id="terugverdentijd"></span> maanden</p>
-      <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span> %</p>
-      <p>Rendement na 12 jaar: <span id="rendement_12jaar"></span> €</p>
-      <p>Rendement in maand 61: <span id="rendement_maand_61"></span> €</p>
-      <p>Maximaal verlies: <span id="max_verlies"></span> €</p>
-      <canvas id="barChart" height="150"></canvas>
-    </div>
-
     <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;">
       <div class="vergelijk-blok">
         <h3>Maand 1</h3>
@@ -177,7 +197,7 @@
           Rendement na 12 jaar <span id="kern_rendement_12jaar">-</span>
         </div>
       </div>
-      <canvas id="lineChart" height="300"></canvas>
+      <canvas id="lineChart" height="220"></canvas>
     </div>
   </div>
 <script>
@@ -197,20 +217,7 @@
       const res = await response.json();
       const parseNum = (v) => parseFloat(v);
 
-      // Pagina 2
-      document.getElementById("resultaten").style.display = "block";
-      document.getElementById("omzet").textContent = res.omzet + ' €';
-      document.getElementById("energiekost").textContent = res.energiekost + ' €';
-      document.getElementById("capaciteitskost").textContent = res.capaciteitskost + ' €';
-      document.getElementById("huurprijs").textContent = res.huurprijs + ' €';
-      document.getElementById("energiehoeveelheid").textContent = res.energiehoeveelheid + ' kWh';
-      document.getElementById("terugverdentijd").textContent = res.terugverdentijd + ' maanden';
-      document.getElementById("jaarlijksrendement").textContent = res.rendement_jaarlijks + ' %';
-      document.getElementById("rendement_12jaar").textContent = res.rendement_12jaar + ' €';
-      document.getElementById("rendement_maand_61").textContent = res.rendement_maand_61 + ' €';
-      document.getElementById("max_verlies").textContent = res.max_verlies + ' €';
-
-      // Pagina 3
+      // Kernresultaten (pagina 3)
       document.getElementById("overzichtBlok").style.display = "block";
       document.getElementById("kern_max_verlies").textContent = res.max_verlies + ' €';
       document.getElementById("kern_rendement_61").textContent = res.rendement_maand_61 + ' €';
@@ -218,22 +225,7 @@
       document.getElementById("kern_terugverdentijd").textContent = res.terugverdentijd + ' maanden';
       document.getElementById("kern_rendement_12jaar").textContent = res.rendement_12jaar + ' €';
 
-      // BarChart
-      if (window.barChart instanceof Chart) window.barChart.destroy();
-      window.barChart = new Chart(document.getElementById("barChart"), {
-        type: 'bar',
-        data: {
-          labels: ['Omzet', 'Energiekost', 'Capaciteit', 'Huur'],
-          datasets: [{
-            label: '€',
-            data: [res.omzet, res.energiekost, res.capaciteitskost, res.huurprijs],
-            backgroundColor: ['#00FC63', '#005A00', '#373736', '#888']
-          }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-      });
-
-      // LineChart
+      // LineChart: cumulatief resultaat
       const canvas = document.getElementById("lineChart");
       if (window.lineChart && typeof window.lineChart.destroy === "function") {
         window.lineChart.destroy();
@@ -268,8 +260,8 @@
                   label: {
                     display: true,
                     content: 'Max verlies',
-                    position: 'start',
                     color: '#FF0000',
+                    position: 'start',
                     backgroundColor: 'transparent'
                   }
                 },
@@ -283,8 +275,8 @@
                   label: {
                     display: true,
                     content: 'Terugverdentijd',
-                    position: 'start',
                     color: '#0000FF',
+                    position: 'start',
                     backgroundColor: 'transparent'
                   }
                 }
@@ -294,7 +286,7 @@
         }
       });
 
-      // Vergelijking maand 1 / 36 / 72
+      // Maandvergelijkingen tonen
       document.getElementById("vergelijkingBlok").style.display = "flex";
       if (!window.vergelijkCharts) window.vergelijkCharts = {};
       const maanden = [0, 35, 71];
