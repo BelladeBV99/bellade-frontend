@@ -1,14 +1,15 @@
 <!DOCTYPE html>
+
 <html lang="nl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bellade Tool</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Bellade Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
+<script crossorigin="anonymous" referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
     html, body {
       margin: 0;
       padding: 0;
@@ -220,8 +221,18 @@
   .download-knop {
     display: none !important;
   }
+
   .pdf-header, .pdf-footer {
     display: block !important;
+  }
+
+  .block, .vergelijking-grid, .kerncijfers, canvas {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  #lineChart {
+    max-height: 250px !important;
   }
 }
 .pdf-header, .pdf-footer {
@@ -241,80 +252,70 @@
 .pdf-footer {
   padding: 20px;
 }
-
 </style>
 </head>
-<body>
-  <div class="pdf-header">
-    <img src="kleur%20Versie%201.png" alt="Bellade logo" />
-  </div>
-  <header>
-    <div class="header-inner">
-      <img src="kleur%20Versie%201.png" alt="Bellade logo" />
-      <a href="https://www.bellade.be/contact">Contact</a>
-    </div>
-  </header>
-
-  <div class="container" id="pdfContent">
-    <div class="title-block">
-      <h1>Bereken uw mogelijk rendement met een snellader van Bellade</h1>
-      <p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
-    </div>
-
-    <!-- Gegevens invoeren -->
-    <div class="block">
-      <h2>Gegevens invoeren</h2>
-      <form id="form">
-        <div class="form-grid">
-          <div class="form-column">
-            <label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000" />
-            <label>Huurprijs in offerte (€):</label><input name="huurprijs" value="1095" />
-            <label>Vermogen snellader in offerte (kW):</label><input name="vermogen" value="80" />
-          </div>
-          <div class="form-column">
-            <label>Starttarief laadsessie (€):</label><input name="starttarief" value="2" />
-            <label>Verkoopprijs kWh (€):</label><input name="kwhprijs" value="0.7" />
-            <label>Eigen aankoopprijs energie (€/kWh):</label><input name="kostprijsenergie" value="0.2" />
-          </div>
-          <div class="form-column">
-            <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
-            <label>Gemiddelde maandelijkse stijging in #laadsessies (%):</label><input name="maandstijging" value="0.005" />
-            <small>Gebruik decimale notatie: 0.005 = 0.5% maandelijkse groei</small>
-          </div>
-        </div>
-        <button type="button" onclick="bereken()">Start calculatie</button>
-      </form>
-    </div>
-
-    <!-- Vergelijking -->
-    <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;"></div>
-
-    <!-- Overzicht -->
-    <div class="block" id="overzichtBlok" style="display: none;">
-      <h2>Overzicht op lange termijn</h2>
-      <div class="kerncijfers">
-        <div class="kerncijfer-item"><div>Maximale negatieve positie</div><span id="kern_max_verlies">-</span></div>
-        <div class="kerncijfer-item"><div>Rendement maand 61</div><span id="kern_rendement_61">-</span></div>
-        <div class="kerncijfer-item"><div>Jaarlijks rendement</div><span id="kern_rendement_jaarlijks">-</span></div>
-        <div class="kerncijfer-item"><div>Terugverdentijd</div><span id="kern_terugverdentijd">-</span></div>
-        <div class="kerncijfer-item"><div>Rendement na 12 jaar</div><span id="kern_rendement_12jaar">-</span></div>
-      </div>
-      <canvas id="lineChart"></canvas>
-    </div>
-
-    <!-- PDF Download knop -->
-    <button class="download-knop" onclick="downloadPDF()">Download als PDF</button>
-  </div>
-
-  <footer>
-    <p>&copy; 2025 Bellade. Alle rechten voorbehouden.</p>
-    <p>
-      <a href="https://www.bellade.be/privacybeleid">Privacybeleid</a> |
+<body><div class="pdf-header"><img alt="Bellade logo" src="kleur%20Versie%201.png"/></div>
+<header>
+<div class="header-inner">
+<img alt="Bellade logo" src="kleur%20Versie%201.png"/>
+<a href="https://www.bellade.be/contact">Contact</a>
+</div>
+</header>
+<div class="container" id="pdfContent">
+<div class="title-block">
+<h1>Bereken uw mogelijk rendement met een snellader van Bellade</h1>
+<p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
+</div>
+<!-- Gegevens invoeren -->
+<div class="block">
+<h2>Gegevens invoeren</h2>
+<form id="form">
+<div class="form-grid">
+<div class="form-column">
+<label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000"/>
+<label>Huurprijs in offerte (€):</label><input name="huurprijs" value="1095"/>
+<label>Vermogen snellader in offerte (kW):</label><input name="vermogen" value="80"/>
+</div>
+<div class="form-column">
+<label>Starttarief laadsessie (€):</label><input name="starttarief" value="2"/>
+<label>Verkoopprijs kWh (€):</label><input name="kwhprijs" value="0.7"/>
+<label>Eigen aankoopprijs energie (€/kWh):</label><input name="kostprijsenergie" value="0.2"/>
+</div>
+<div class="form-column">
+<label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2"/>
+<label>Gemiddelde maandelijkse stijging in #laadsessies (%):</label><input name="maandstijging" value="0.005"/>
+<small>Gebruik decimale notatie: 0.005 = 0.5% maandelijkse groei</small>
+</div>
+</div>
+<button onclick="bereken()" type="button">Start calculatie</button>
+</form>
+</div>
+<!-- Vergelijking -->
+<div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;"></div>
+<!-- Overzicht -->
+<div class="block" id="overzichtBlok" style="display: none;">
+<h2>Overzicht op lange termijn</h2>
+<div class="kerncijfers">
+<div class="kerncijfer-item"><div>Maximale negatieve positie</div><span id="kern_max_verlies">-</span></div>
+<div class="kerncijfer-item"><div>Rendement maand 61</div><span id="kern_rendement_61">-</span></div>
+<div class="kerncijfer-item"><div>Jaarlijks rendement</div><span id="kern_rendement_jaarlijks">-</span></div>
+<div class="kerncijfer-item"><div>Terugverdentijd</div><span id="kern_terugverdentijd">-</span></div>
+<div class="kerncijfer-item"><div>Rendement na 12 jaar</div><span id="kern_rendement_12jaar">-</span></div>
+</div>
+<canvas id="lineChart"></canvas>
+</div>
+<!-- PDF Download knop -->
+<button class="download-knop" onclick="downloadPDF()">Download als PDF</button>
+</div>
+<footer>
+<p>© 2025 Bellade. Alle rechten voorbehouden.</p>
+<p>
+<a href="https://www.bellade.be/privacybeleid">Privacybeleid</a> |
       <a href="https://www.bellade.be/algemene-voorwaarden">Algemene voorwaarden</a> |
       <a href="https://www.bellade.be/contact">Contact</a>
-    </p>
-  </footer>
-  <script>
+</p>
+</footer>
+<script>
     function formatEuro(getal) {
       return parseFloat(getal).toFixed(2)
         .replace('.', ',')
@@ -473,18 +474,17 @@
       document.getElementById("overzichtBlok").style.display = "block";
 
       const element = document.getElementById('pdfContent');
+      
       const opt = {
-        margin: 0.3,
+        margin: 0,
         filename: 'bellade-simulatie.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { scale: 2, scrollY: 0 },
-        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all'] }
       };
       html2pdf().set(opt).from(element).save();
     }
   </script>
-  <div class="pdf-footer">
-    Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be
-  </div>
-</body>
+<div class="pdf-footer">Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be</div></body>
 </html>
