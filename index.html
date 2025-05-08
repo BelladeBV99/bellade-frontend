@@ -130,26 +130,89 @@
       }
     }
 
-    @media print {
-      body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
+    .vergelijking-grid {
+      display: flex;
+      gap: 30px;
+      flex-wrap: wrap;
+      margin-bottom: 60px;
+    }
 
-      .block, .vergelijking-grid, .kerncijfers {
+    .vergelijk-blok {
+      flex: 1;
+      background-color: #fff;
+      color: #005A00;
+      padding: 16px;
+      border-radius: 16px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      min-width: 280px;
+    }
+
+    .vergelijk-blok p {
+      margin: 4px 0;
+    }
+
+    .vergelijk-blok p:last-child {
+      margin-top: 12px;
+      font-weight: 800;
+      font-size: 1.1em;
+    }
+    .kerncijfers {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .kerncijfer-item {
+      flex: 1;
+      background-color: #fff;
+      color: #005A00;
+      border-radius: 16px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      font-weight: 500;
+      min-width: 150px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .kerncijfer-item span {
+      font-size: 22px;
+      font-weight: 800;
+      margin-top: 6px;
+    }
+
+    #lineChart {
+      width: 100%;
+      max-height: 300px;
+    }
+
+    footer {
+      width: 100%;
+      background-color: #005A00;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+      font-size: 14px;
+      margin-top: 60px;
+    }
+
+    footer a {
+      color: #FFFFFF;
+      text-decoration: underline;
+    }
+
+    @media print {
+      .block, .vergelijking-grid, .kerncijfers, canvas {
         page-break-inside: avoid;
         break-inside: avoid;
-        break-after: auto;
       }
 
-      canvas {
-        display: none !important;
-      }
-
-      .chart-img {
-        display: block !important;
-        width: 100%;
-        margin-top: 10px;
+      #lineChart {
+        max-height: 250px !important;
       }
     }
   </style>
@@ -168,6 +231,7 @@
       <p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
     </div>
 
+    <!-- Gegevens invoeren -->
     <div class="block">
       <h2>Gegevens invoeren</h2>
       <form id="form">
@@ -191,6 +255,7 @@
         <button type="button" onclick="bereken()">Start calculatie</button>
       </form>
     </div>
+
     <!-- Vergelijking -->
     <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;"></div>
 
@@ -209,7 +274,16 @@
 
     <!-- PDF Download knop -->
     <button onclick="downloadPDF()">Download als PDF</button>
-  </div> <!-- sluit container div -->
+  </div>
+
+  <footer>
+    <p>&copy; 2025 Bellade. Alle rechten voorbehouden.</p>
+    <p>
+      <a href="https://www.bellade.be/privacybeleid">Privacybeleid</a> |
+      <a href="https://www.bellade.be/algemene-voorwaarden">Algemene voorwaarden</a> |
+      <a href="https://www.bellade.be/contact">Contact</a>
+    </p>
+  </footer>
   <script>
     function formatEuro(getal) {
       return parseFloat(getal).toFixed(2)
@@ -230,8 +304,6 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
         });
-
-        if (!response.ok) throw new Error("Serverfout bij ophalen resultaten.");
 
         const res = await response.json();
         const maanden = [0, 35, 71];
@@ -370,15 +442,6 @@
       document.getElementById("vergelijkingBlok").style.display = "flex";
       document.getElementById("overzichtBlok").style.display = "block";
 
-      const canvases = document.querySelectorAll("canvas");
-      canvases.forEach(canvas => {
-        const img = document.createElement("img");
-        img.src = canvas.toDataURL("image/png");
-        img.className = "chart-img";
-        canvas.style.display = "none";
-        canvas.parentNode.insertBefore(img, canvas.nextSibling);
-      });
-
       const element = document.getElementById('pdfContent');
       const opt = {
         margin: 0.3,
@@ -387,20 +450,8 @@
         html2canvas: { scale: 2, scrollY: 0 },
         jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
       };
-
-      html2pdf().set(opt).from(element).save().then(() => {
-        document.querySelectorAll("canvas").forEach(c => c.style.display = "block");
-        document.querySelectorAll(".chart-img").forEach(i => i.remove());
-      });
+      html2pdf().set(opt).from(element).save();
     }
   </script>
-  <footer>
-    <p>&copy; 2025 Bellade. Alle rechten voorbehouden.</p>
-    <p>
-      <a href="https://www.bellade.be/privacybeleid">Privacybeleid</a> |
-      <a href="https://www.bellade.be/algemene-voorwaarden">Algemene voorwaarden</a> |
-      <a href="https://www.bellade.be/contact">Contact</a>
-    </p>
-  </footer>
 </body>
 </html>
