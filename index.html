@@ -14,10 +14,12 @@
       margin: 0;
       padding: 20px;
     }
+
     .container {
-      max-width: 800px;
+      max-width: 1000px;
       margin: auto;
     }
+
     .block {
       background-color: #fff;
       padding: 20px;
@@ -25,11 +27,13 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       margin-bottom: 30px;
     }
+
     label {
       display: block;
       margin-top: 10px;
       font-weight: 600;
     }
+
     input {
       width: 100%;
       padding: 8px;
@@ -37,6 +41,7 @@
       border-radius: 8px;
       border: 1px solid #ccc;
     }
+
     button {
       margin-top: 20px;
       width: 100%;
@@ -48,17 +53,36 @@
       border-radius: 12px;
       cursor: pointer;
     }
+
     .result {
       background-color: #373736;
       color: #00FC63;
       padding: 20px;
       border-radius: 16px;
     }
+
     small {
       display: block;
       font-size: 12px;
       color: #666;
       margin-top: 4px;
+    }
+
+    .form-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .form-column {
+      flex: 1 1 calc(33.333% - 20px);
+      min-width: 240px;
+    }
+
+    @media (max-width: 768px) {
+      .form-column {
+        flex: 1 1 100%;
+      }
     }
   </style>
 </head>
@@ -67,17 +91,25 @@
     <div class="block">
       <h2>Gegevens invoeren</h2>
       <form id="form">
-        <label>Vermogen in kW:</label><input name="vermogen" value="80" />
-        <label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000" />
-        <label>Huurprijs (€):</label><input name="huurprijs" value="1095" />
-        <label>Starttarief per laadsessie (€):</label><input name="starttarief" value="2" />
-        <label>kWh-Verkoopprijs (€):</label><input name="kwhprijs" value="0.7" />
-        <label>Parkeertarief (€):</label><input name="parkeertarief" value="1" />
-        <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
-        <label>Kostprijs aankoop energie (€):</label><input name="kostprijsenergie" value="0.2" />
-        <label>Gemiddelde maandelijkse stijging in laadsessies (%):</label>
-        <input name="maandstijging" value="0.005" />
-        <small>Gebruik decimale notatie: 0.005 = 0.5% maandelijkse groei</small>
+        <div class="form-grid">
+          <div class="form-column">
+            <label>Vermogen in kW:</label><input name="vermogen" value="80" />
+            <label>Starttarief per laadsessie (€):</label><input name="starttarief" value="2" />
+            <label>Parkeertarief (€):</label><input name="parkeertarief" value="1" />
+          </div>
+          <div class="form-column">
+            <label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000" />
+            <label>kWh-Verkoopprijs (€):</label><input name="kwhprijs" value="0.7" />
+            <label>Gemiddeld aantal laadsessies per dag:</label><input name="laadsessies" value="2" />
+          </div>
+          <div class="form-column">
+            <label>Huurprijs (€):</label><input name="huurprijs" value="1095" />
+            <label>Kostprijs aankoop energie (€):</label><input name="kostprijsenergie" value="0.2" />
+            <label>Gemiddelde maandelijkse stijging in laadsessies (%):</label>
+            <input name="maandstijging" value="0.005" />
+            <small>Gebruik decimale notatie: 0.005 = 0.5% maandelijkse groei</small>
+          </div>
+        </div>
         <button type="button" onclick="bereken()">Start calculatie</button>
       </form>
     </div>
@@ -106,7 +138,6 @@
           .map(([k, v]) => [k, v.replace(',', '.')])
       );
 
-      // Voeg hardcoded waarden toe aan de data
       data["huurprijs_later"] = 275;
       data["verbruik_per_sessie"] = 39;
 
