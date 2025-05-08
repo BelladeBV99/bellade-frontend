@@ -214,11 +214,47 @@
       #lineChart {
         max-height: 250px !important;
       }
+      @media print {
+  button,
+  .download-knop {
+    display: none !important;
+  }
+
+  .pdf-header,
+  .pdf-footer {
+    display: block !important;
+  }
+}
+
+.pdf-header {
+  display: none;
+  width: 100%;
+  padding: 10px 20px;
+  text-align: left;
+}
+
+.pdf-header img {
+  height: 40px;
+}
+
+.pdf-footer {
+  display: none;
+  width: 100%;
+  padding: 20px;
+  font-size: 12px;
+  text-align: center;
+  color: #333;
+}
+
     }
   </style>
 </head>
 <body>
   <header>
+    <div class="pdf-header">
+  <img src="kleur%20Versie%201.png" alt="Bellade logo" />
+</div>
+
     <div class="header-inner">
       <img src="kleur%20Versie%201.png" alt="Bellade logo" />
       <a href="https://www.bellade.be/contactus">Contact</a>
@@ -273,7 +309,7 @@
     </div>
 
     <!-- PDF Download knop -->
-    <button onclick="downloadPDF()">Download als PDF</button>
+   <button class="download-knop" onclick="downloadPDF()">Download als PDF</button>
   </div>
 
   <footer>
@@ -462,5 +498,9 @@ html2pdf().set(opt).from(element).toPdf().get('pdf').then(pdf => {
 
     }
   </script>
+  <div class="pdf-footer">
+  Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be
+</div>
+
 </body>
 </html>
