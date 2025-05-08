@@ -214,50 +214,44 @@
       #lineChart {
         max-height: 250px !important;
       }
-      @media print {
-  button,
+    }
+  
+@media print {
   .download-knop {
     display: none !important;
   }
-
-  .pdf-header,
-  .pdf-footer {
+  .pdf-header, .pdf-footer {
     display: block !important;
   }
 }
-
-.pdf-header {
+.pdf-header, .pdf-footer {
   display: none;
   width: 100%;
-  padding: 10px 20px;
-  text-align: left;
+  text-align: center;
+  font-size: 12px;
+  color: #333;
 }
-
+.pdf-header {
+  text-align: left;
+  padding: 10px 20px;
+}
 .pdf-header img {
   height: 40px;
 }
-
 .pdf-footer {
-  display: none;
-  width: 100%;
   padding: 20px;
-  font-size: 12px;
-  text-align: center;
-  color: #333;
 }
 
-    }
-  </style>
+</style>
 </head>
 <body>
+  <div class="pdf-header">
+    <img src="kleur%20Versie%201.png" alt="Bellade logo" />
+  </div>
   <header>
-    <div class="pdf-header">
-  <img src="kleur%20Versie%201.png" alt="Bellade logo" />
-</div>
-
     <div class="header-inner">
       <img src="kleur%20Versie%201.png" alt="Bellade logo" />
-      <a href="https://www.bellade.be/contactus">Contact</a>
+      <a href="https://www.bellade.be/contact">Contact</a>
     </div>
   </header>
 
@@ -309,7 +303,7 @@
     </div>
 
     <!-- PDF Download knop -->
-   <button class="download-knop" onclick="downloadPDF()">Download als PDF</button>
+    <button class="download-knop" onclick="downloadPDF()">Download als PDF</button>
   </div>
 
   <footer>
@@ -480,27 +474,17 @@
 
       const element = document.getElementById('pdfContent');
       const opt = {
-  margin:       0,
-  filename:     'bellade-simulatie.pdf',
-  image:        { type: 'jpeg', quality: 0.98 },
-  html2canvas:  { scale: 2, scrollY: 0 },
-  jsPDF:        { unit: 'in', format: [11.7, 16.5], orientation: 'portrait' }, // aangepast formaat
-  pagebreak:    { mode: ['avoid-all'], before: '#never-break' },
-};
-
-html2pdf().set(opt).from(element).toPdf().get('pdf').then(pdf => {
-  const totalPages = pdf.internal.getNumberOfPages();
-  if (totalPages > 1) {
-    const scale = 1 / totalPages;
-    pdf.internal.scaleFactor = pdf.internal.scaleFactor * scale;
-  }
-}).save();
-
+        margin: 0.3,
+        filename: 'bellade-simulatie.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, scrollY: 0 },
+        jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
     }
   </script>
   <div class="pdf-footer">
-  Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be
-</div>
-
+    Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be
+  </div>
 </body>
 </html>
