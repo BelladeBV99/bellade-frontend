@@ -19,7 +19,7 @@
       position: sticky;
       top: 0;
       background-color: #fff;
-      padding: 10px 20px;
+      padding: 20px 40px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -55,7 +55,7 @@
     }
 
     .title-block h1 {
-      font-size: 32px;
+      font-size: 28px;
       font-weight: 800;
       margin-bottom: 8px;
     }
@@ -150,58 +150,6 @@
       font-weight: 800;
       font-size: 1.1em;
     }
-
-    .kerncijfers {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .kerncijfer-item {
-      flex: 1;
-      background-color: #fff;
-      color: #005A00;
-      border-radius: 16px;
-      padding: 10px;
-      text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-      font-weight: 500;
-      min-width: 150px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .kerncijfer-item span {
-      font-size: 22px;
-      font-weight: 800;
-      margin-top: 6px;
-    }
-
-    #lineChart {
-      max-height: 300px !important;
-    }
-
-    .chartjs-y-axis line {
-      stroke-width: 2px !important;
-    }
-
-    footer {
-      width: 100%;
-      background-color: #005A00;
-      color: white;
-      text-align: center;
-      padding: 30px 20px;
-      font-size: 14px;
-      margin-top: 60px;
-    }
-
-    footer a {
-      color: #FFFFFF;
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
@@ -212,11 +160,11 @@
 
   <div class="container">
     <div class="title-block">
-      <h1>Bereken uw rendement op EV-laadinfrastructuur</h1>
-      <p>Disclaimer: deze tool is informatief en gebaseerd op een standaardmodel met realistische parameters.</p>
+      <h1>Bereken uw mogelijk rendement met een snellader van Bellade</h1>
+      <p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
     </div>
 
-    <!-- ... originele HTML blijft vanaf hier 100% ongewijzigd -->
+    <!-- Hierna volgt direct het formulierblok -->
     <div class="block">
       <h2>Gegevens invoeren</h2>
       <form id="form">
@@ -298,15 +246,24 @@
       <canvas id="lineChart" height="300"></canvas>
     </div>
 
-    <footer>
-      <p>&copy; 2025 Bellade. Alle rechten voorbehouden.</p>
-      <p>
-        <a href="https://www.bellade.be/privacybeleid">Privacybeleid</a> |
-        <a href="https://www.bellade.be/algemene-voorwaarden">Algemene voorwaarden</a> |
-        <a href="https://www.bellade.be/contact">Contact</a>
-      </p>
-    </footer>
-  </div>
+  </div> <!-- sluit container -->
+
+  <footer style="
+    width: 100vw;
+    background-color: #005A00;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 14px;
+    margin-top: 60px;
+  ">
+    <p>&copy; 2025 Bellade. Alle rechten voorbehouden.</p>
+    <p>
+      <a href="https://www.bellade.be/privacybeleid" style="color: #FFFFFF; text-decoration: underline;">Privacybeleid</a> |
+      <a href="https://www.bellade.be/algemene-voorwaarden" style="color: #FFFFFF; text-decoration: underline;">Algemene voorwaarden</a> |
+      <a href="https://www.bellade.be/contact" style="color: #FFFFFF; text-decoration: underline;">Contact</a>
+    </p>
+  </footer>
 
 <script>
   function formatEuro(getal) {
