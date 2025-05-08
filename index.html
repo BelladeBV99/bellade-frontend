@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <style>
     html, body {
       margin: 0;
@@ -209,18 +210,18 @@
 <body>
   <header>
     <div class="header-inner">
-    <img src="kleur%20Versie%201.png" alt="Bellade logo" />
+      <img src="kleur%20Versie%201.png" alt="Bellade logo" />
       <a href="https://www.bellade.be/contact">Contact</a>
     </div>
   </header>
 
-  <div class="container">
+  <div class="container" id="pdfContent">
     <div class="title-block">
       <h1>Bereken uw mogelijk rendement met een snellader van Bellade</h1>
       <p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
     </div>
 
-    <!-- De rest van de inhoud komt hierna -->
+    <!-- Gegevens invoeren -->
     <div class="block">
       <h2>Gegevens invoeren</h2>
       <form id="form">
@@ -245,8 +246,10 @@
       </form>
     </div>
 
+    <!-- Vergelijking -->
     <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;"></div>
 
+    <!-- Overzicht -->
     <div class="block" id="overzichtBlok" style="display: none;">
       <h2>Overzicht op lange termijn</h2>
       <div class="kerncijfers">
@@ -254,10 +257,16 @@
         <div class="kerncijfer-item"><div>Rendement maand 61</div><span id="kern_rendement_61">-</span></div>
         <div class="kerncijfer-item"><div>Jaarlijks rendement</div><span id="kern_rendement_jaarlijks">-</span></div>
         <div class="kerncijfer-item"><div>Terugverdentijd</div><span id="kern_terugverdentijd">-</span></div>
-        <div class="kerncijfer-item"><div>Rendement na 12 jaar</div><span id="kern_rendement_12jaar">-</span></div>
+        <div class="kerncijfer-item"><div>Rendement na 12 jaar</div><span id="kern_rendement_12jaar">
+::contentReference[oaicite:1]{index=1}
+ 
+</span></div>
       </div>
       <canvas id="lineChart"></canvas>
     </div>
+
+    <!-- PDF Download knop -->
+    <button onclick="downloadPDF()">Download als PDF</button>
   </div> <!-- einde .container -->
 
   <footer>
@@ -420,6 +429,18 @@
         alert("Fout bij berekening: " + error.message);
         console.error(error);
       }
+    }
+
+    function downloadPDF() {
+      const element = document.getElementById('pdfContent');
+      const opt = {
+        margin:       0.3,
+        filename:     'bellade-simulatie.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(element).save();
     }
   </script>
 </body>
