@@ -39,7 +39,6 @@
       padding: 10px 20px;
       border-radius: 12px;
       text-decoration: none;
-      font-family: 'Inter', sans-serif;
     }
 
     .intro-block {
@@ -154,7 +153,7 @@
         <button type="button" onclick="bereken()">Start calculatie</button>
       </form>
     </div>
-    <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none;">
+    <div class="vergelijking-grid" id="vergelijkingBlok" style="display: none; gap: 20px;">
       <div class="vergelijk-blok">
         <h3>Maand 1</h3>
         <p>Omzet: <span id="m1_omzet"></span> €</p>
@@ -188,25 +187,25 @@
 
     <div class="block" id="overzichtBlok" style="display: none;">
       <h2>Overzicht op lange termijn</h2>
-      <div class="kerncijfers">
-        <div class="kerncijfer-item">
-          Maximale negatieve positie
+      <div class="kerncijfers" style="display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; margin-bottom: 20px;">
+        <div class="kerncijfer-item" style="flex: 1; min-width: 150px; text-align: center;">
+          <div style="font-weight: 500;">Maximale negatieve positie</div>
           <span id="kern_max_verlies">-</span>
         </div>
-        <div class="kerncijfer-item">
-          Rendement maand 61
+        <div class="kerncijfer-item" style="flex: 1; min-width: 150px; text-align: center;">
+          <div style="font-weight: 500;">Rendement maand 61</div>
           <span id="kern_rendement_61">-</span>
         </div>
-        <div class="kerncijfer-item">
-          Jaarlijks rendement
+        <div class="kerncijfer-item" style="flex: 1; min-width: 150px; text-align: center;">
+          <div style="font-weight: 500;">Jaarlijks rendement</div>
           <span id="kern_rendement_jaarlijks">-</span>
         </div>
-        <div class="kerncijfer-item">
-          Terugverdentijd
+        <div class="kerncijfer-item" style="flex: 1; min-width: 150px; text-align: center;">
+          <div style="font-weight: 500;">Terugverdentijd</div>
           <span id="kern_terugverdentijd">-</span>
         </div>
-        <div class="kerncijfer-item">
-          Rendement na 12 jaar
+        <div class="kerncijfer-item" style="flex: 1; min-width: 150px; text-align: center;">
+          <div style="font-weight: 500;">Rendement na 12 jaar</div>
           <span id="kern_rendement_12jaar">-</span>
         </div>
       </div>
@@ -365,7 +364,7 @@
     }
   }
 </script>
-  <footer style="width: 100%; background-color: #242424; color: white; padding: 40px 20px 30px 20px; font-size: 14px;">
+  <footer style="width: 100%; background-color: #242424; color: white; padding: 30px 20px; font-size: 14px;">
     <div style="max-width: 1200px; margin: auto; display: flex; flex-wrap: wrap; justify-content: space-between;">
       <div style="flex: 1; min-width: 200px; margin-bottom: 20px;">
         <h4 style="color: #00FC63;">Handige links</h4>
