@@ -140,16 +140,16 @@
     </div>
     <div class="result block" id="resultaten" style="display:none">
       <h2>Resultaten</h2>
-      <p>Omzet: <span id="omzet"></span></p>
-      <p>Energiekost: <span id="energiekost"></span></p>
-      <p>Capaciteitskost: <span id="capaciteitskost"></span></p>
-      <p>Huurprijs: <span id="huurprijs"></span></p>
-      <p>Verkochte hoeveelheid energie: <span id="energiehoeveelheid"></span></p>
-      <p>Terugverdentijd: <span id="terugverdentijd"></span></p>
-      <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span></p>
-      <p>Rendement na 12 jaar: <span id="rendement_12jaar"></span></p>
-      <p>Rendement in maand 61: <span id="rendement_maand_61"></span></p>
-      <p>Maximaal verlies: <span id="max_verlies"></span></p>
+      <p>Omzet: <span id="omzet"></span> €</p>
+      <p>Energiekost: <span id="energiekost"></span> €</p>
+      <p>Capaciteitskost: <span id="capaciteitskost"></span> €</p>
+      <p>Huurprijs: <span id="huurprijs"></span> €</p>
+      <p>Verkochte hoeveelheid energie: <span id="energiehoeveelheid"></span> kWh</p>
+      <p>Terugverdentijd: <span id="terugverdentijd"></span> maanden</p>
+      <p>Jaarlijks rendement: <span id="jaarlijksrendement"></span> %</p>
+      <p>Rendement na 12 jaar: <span id="rendement_12jaar"></span> €</p>
+      <p>Rendement in maand 61: <span id="rendement_maand_61"></span> €</p>
+      <p>Maximaal verlies: <span id="max_verlies"></span> €</p>
       <canvas id="barChart" height="150"></canvas>
       <canvas id="lineChart" height="250"></canvas>
     </div>
@@ -242,9 +242,11 @@
           options: { responsive: true, scales: { y: { beginAtZero: false } } }
         });
 
-        // Vergelijking maand 1, 36, 72
+        // ✅ Herberekening-fix voor maandgrafieken
+        if (!window.vergelijkCharts) window.vergelijkCharts = {};
         const maanden = [0, 35, 71];
         const ids = ['m1', 'm36', 'm72'];
+
         maanden.forEach((m, i) => {
           const sessies = res.sessies_rij[m];
           const sessies_maand = sessies * 30;
@@ -255,13 +257,19 @@
           const hr = m < 60 ? parseNum(data.huurprijs) : 275;
           const winst = omz - ek - cap - hr;
 
-          document.getElementById(`${ids[i]}_omzet`).textContent = omz.toFixed(2);
-          document.getElementById(`${ids[i]}_energiekost`).textContent = ek.toFixed(2);
-          document.getElementById(`${ids[i]}_capaciteit`).textContent = cap.toFixed(2);
-          document.getElementById(`${ids[i]}_huur`).textContent = hr.toFixed(2);
-          document.getElementById(`${ids[i]}_rendement`).textContent = winst.toFixed(2);
+          const id = ids[i];
+          document.getElementById(`${id}_omzet`).textContent = omz.toFixed(2);
+          document.getElementById(`${id}_energiekost`).textContent = ek.toFixed(2);
+          document.getElementById(`${id}_capaciteit`).textContent = cap.toFixed(2);
+          document.getElementById(`${id}_huur`).textContent = hr.toFixed(2);
+          document.getElementById(`${id}_rendement`).textContent = winst.toFixed(2);
 
-          new Chart(document.getElementById(`chart_${ids[i]}`), {
+          const canvas = document.getElementById(`chart_${id}`);
+          if (window.vergelijkCharts[id]) {
+            window.vergelijkCharts[id].destroy();
+          }
+
+          window.vergelijkCharts[id] = new Chart(canvas, {
             type: 'bar',
             data: {
               labels: ['Omzet', 'Energiekost', 'Capaciteit', 'Huur'],
