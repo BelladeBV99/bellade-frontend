@@ -21,20 +21,24 @@
       position: sticky;
       top: 0;
       background-color: #fff;
-      padding: 20px 40px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      z-index: 1000;
+    }
+
+    .header-inner {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      z-index: 1000;
-      width: 100%;
     }
 
-    header img {
+    .header-inner img {
       height: 40px;
     }
 
-    header a {
+    .header-inner a {
       background-color: #00FC63;
       color: #000;
       font-family: 'Inter', sans-serif;
@@ -204,8 +208,10 @@
 </head>
 <body>
   <header>
-    <img src="https://www.bellade.be/wp-content/uploads/2024/03/Bellade-logo.svg" alt="Bellade logo" />
-    <a href="https://www.bellade.be/contact">Contact</a>
+    <div class="header-inner">
+      <img src="https://www.bellade.be/wp-content/uploads/2024/03/Bellade-logo.svg" alt="Bellade logo" />
+      <a href="https://www.bellade.be/contact">Contact</a>
+    </div>
   </header>
 
   <div class="container">
@@ -214,7 +220,7 @@
       <p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
     </div>
 
-    <!-- ✅ hier volgt het formulier, maandvergelijking, overzicht, grafiek en scripts -->
+    <!-- De rest van de inhoud komt hierna -->
     <div class="block">
       <h2>Gegevens invoeren</h2>
       <form id="form">
@@ -299,7 +305,6 @@
           const hr = m < 60 ? parseFloat(data.huurprijs) : 275;
           const winst = omz - ek - cap - hr;
           const div = document.createElement("div");
-          const id = ["m1", "m36", "m72"][i];
           div.className = "vergelijk-blok";
           div.innerHTML = `
             <h3>${titels[i]}</h3>
@@ -308,7 +313,7 @@
             <p>Capaciteitstarief: <span>${formatEuro(cap)} €</span></p>
             <p>Huurprijs: <span>${formatEuro(hr)} €</span></p>
             <p><strong>Netto rendement: <span>${formatEuro(winst)} €</span></strong></p>
-            <canvas id="chart_${id}" height="180"></canvas>
+            <canvas id="chart_${titels[i].toLowerCase().replace(' ', '')}" height="180"></canvas>
           `;
           container.appendChild(div);
 
