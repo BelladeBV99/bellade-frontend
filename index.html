@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" crossorigin="anonymous"></script>
   <style>
     html, body {
       margin: 0;
@@ -16,6 +16,14 @@
       background-color: #E3F9E0;
       color: #005A00;
       overflow-x: hidden;
+    }
+
+    /* Extra PDF layout fix */
+    .block, .vergelijking-grid, .kerncijfers {
+      page-break-after: always;
+    }
+    .block:last-child, .vergelijking-grid:last-child, .kerncijfers:last-child {
+      page-break-after: auto;
     }
 
     header {
@@ -156,6 +164,7 @@
       font-weight: 800;
       font-size: 1.1em;
     }
+
     .kerncijfers {
       display: flex;
       flex-wrap: wrap;
@@ -284,6 +293,7 @@
       <a href="https://www.bellade.be/contact">Contact</a>
     </p>
   </footer>
+
   <script>
     function formatEuro(getal) {
       return parseFloat(getal).toFixed(2)
@@ -432,15 +442,15 @@
           }
         });
       } catch (error) {
-        alert("Fout bij berekening: " + error.message);
+        alert(\"Fout bij berekening: \" + error.message);
         console.error(error);
       }
     }
 
     function downloadPDF() {
       window.scrollTo(0, 0);
-      document.getElementById("vergelijkingBlok").style.display = "flex";
-      document.getElementById("overzichtBlok").style.display = "block";
+      document.getElementById(\"vergelijkingBlok\").style.display = \"flex\";
+      document.getElementById(\"overzichtBlok\").style.display = \"block\";
 
       const element = document.getElementById('pdfContent');
       const opt = {
