@@ -6,6 +6,7 @@
   <title>Bellade Tool</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -61,13 +62,6 @@
       border-radius: 16px;
     }
 
-    small {
-      display: block;
-      font-size: 12px;
-      color: #666;
-      margin-top: 4px;
-    }
-
     .form-grid {
       display: flex;
       flex-wrap: wrap;
@@ -98,15 +92,10 @@
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-      font-family: 'Inter', sans-serif;
     }
 
     .vergelijk-blok h3 {
       margin-top: 0;
-    }
-
-    .vergelijk-blok canvas {
-      margin-top: 20px;
     }
 
     .kerncijfers {
@@ -152,7 +141,7 @@
             <label>Starttarief laadsessie (€):</label><input name="starttarief" value="2" />
             <label>Verkoopprijs kWh (€):</label><input name="kwhprijs" value="0.7" />
             <label>Parkeertarief na laadsessie (€/u):</label><input name="parkeertarief" value="1" />
-            <label>Eigen aankoopprijs energie (€/kWh) (zonder nettarieven, gemiddeld €0,20/kWh):</label>
+            <label>Eigen aankoopprijs energie (€/kWh):</label>
             <input name="kostprijsenergie" value="0.2" />
           </div>
           <div class="form-column">
@@ -210,30 +199,34 @@
       </div>
     </div>
 
-    <!-- ✅ NIEUWE PAGINA 3: Overzicht kerncijfers + cumulatieve grafiek -->
+    <!-- ✅ PAGINA 3: Overzicht met kerncijfers en cumulatieve grafiek -->
     <div class="block" id="overzichtBlok" style="display: none;">
       <h2>Overzicht op lange termijn</h2>
       <div class="kerncijfers">
         <div class="kerncijfer-item">
-          Max. verlies <span id="kern_max_verlies">-</span>
+          Max. verlies
+          <span id="kern_max_verlies">-</span>
         </div>
         <div class="kerncijfer-item">
-          Rendement maand 61 <span id="kern_rendement_61">-</span>
+          Rendement maand 61
+          <span id="kern_rendement_61">-</span>
         </div>
         <div class="kerncijfer-item">
-          Jaarlijks rendement <span id="kern_rendement_jaarlijks">-</span>
+          Jaarlijks rendement
+          <span id="kern_rendement_jaarlijks">-</span>
         </div>
         <div class="kerncijfer-item">
-          Terugverdentijd <span id="kern_terugverdentijd">-</span>
+          Terugverdentijd
+          <span id="kern_terugverdentijd">-</span>
         </div>
         <div class="kerncijfer-item">
-          Rendement na 12 jaar <span id="kern_rendement_12jaar">-</span>
+          Rendement na 12 jaar
+          <span id="kern_rendement_12jaar">-</span>
         </div>
       </div>
       <canvas id="lineChart" height="300"></canvas>
     </div>
   </div>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
 <script>
   async function bereken() {
     const formData = new FormData(document.getElementById("form"));
@@ -251,7 +244,7 @@
       const res = await response.json();
       const parseNum = (v) => parseFloat(v);
 
-      // Vul basisresultaten
+      // ✅ Pagina 2 vullen
       document.getElementById("resultaten").style.display = "block";
       document.getElementById("omzet").textContent = res.omzet + ' €';
       document.getElementById("energiekost").textContent = res.energiekost + ' €';
@@ -264,7 +257,7 @@
       document.getElementById("rendement_maand_61").textContent = res.rendement_maand_61 + ' €';
       document.getElementById("max_verlies").textContent = res.max_verlies + ' €';
 
-      // Vul kerncijfers in overzichtsblok (pagina 3)
+      // ✅ Pagina 3 vullen
       document.getElementById("overzichtBlok").style.display = "block";
       document.getElementById("kern_max_verlies").textContent = res.max_verlies + ' €';
       document.getElementById("kern_rendement_61").textContent = res.rendement_maand_61 + ' €';
@@ -272,7 +265,7 @@
       document.getElementById("kern_terugverdentijd").textContent = res.terugverdentijd + ' maanden';
       document.getElementById("kern_rendement_12jaar").textContent = res.rendement_12jaar + ' €';
 
-      // Staafdiagram
+      // ✅ BarChart
       if (window.barChart instanceof Chart) window.barChart.destroy();
       window.barChart = new Chart(document.getElementById("barChart"), {
         type: 'bar',
@@ -287,9 +280,10 @@
         options: { responsive: true, plugins: { legend: { display: false } } }
       });
 
-      // Lijngrafiek met 2 stippellijnen
-      if (window.lineChart instanceof Chart) window.lineChart.destroy();
-      const ctx = document.getElementById("lineChart").getContext("2d");
+      // ✅ LineChart (cumulatief met stippellijnen)
+      const canvas = document.getElementById("lineChart");
+      if (window.lineChart) window.lineChart.destroy();
+      const ctx = canvas.getContext("2d");
 
       window.lineChart = new Chart(ctx, {
         type: 'line',
@@ -306,7 +300,7 @@
         options: {
           responsive: true,
           scales: {
-            y: { beginAtZero: false },
+            y: { beginAtZero: false }
           },
           plugins: {
             legend: { display: false },
@@ -317,14 +311,14 @@
                   yMin: res.max_verlies,
                   yMax: res.max_verlies,
                   borderColor: '#FF0000',
-                  borderDash: [6, 6],
                   borderWidth: 2,
+                  borderDash: [6, 6],
                   label: {
                     display: true,
                     content: 'Max verlies',
+                    color: '#FF0000',
                     position: 'start',
-                    backgroundColor: 'transparent',
-                    color: '#FF0000'
+                    backgroundColor: 'transparent'
                   }
                 },
                 terugverdentijd: {
@@ -332,14 +326,14 @@
                   xMin: res.terugverdentijd,
                   xMax: res.terugverdentijd,
                   borderColor: '#0000FF',
-                  borderDash: [4, 4],
                   borderWidth: 2,
+                  borderDash: [4, 4],
                   label: {
                     display: true,
                     content: 'Terugverdentijd',
+                    color: '#0000FF',
                     position: 'start',
-                    backgroundColor: 'transparent',
-                    color: '#0000FF'
+                    backgroundColor: 'transparent'
                   }
                 }
               }
@@ -348,7 +342,8 @@
         }
       });
 
-      // Vergelijking maand 1 - 36 - 72
+      // ✅ Maandvergelijking
+      document.getElementById("vergelijkingBlok").style.display = "flex";
       if (!window.vergelijkCharts) window.vergelijkCharts = {};
       const maanden = [0, 35, 71];
       const ids = ['m1', 'm36', 'm72'];
@@ -388,8 +383,6 @@
           options: { responsive: true, plugins: { legend: { display: false } } }
         });
       });
-
-      document.getElementById("vergelijkingBlok").style.display = "flex";
 
     } catch (error) {
       alert("Fout bij berekening: " + error.message);
