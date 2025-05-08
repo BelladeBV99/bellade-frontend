@@ -221,8 +221,18 @@
   .download-knop {
     display: none !important;
   }
+
   .pdf-header, .pdf-footer {
     display: block !important;
+  }
+
+  .block, .vergelijking-grid, .kerncijfers, canvas {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  #lineChart {
+    max-height: 250px !important;
   }
 }
 .pdf-header, .pdf-footer {
@@ -244,14 +254,14 @@
 }
 </style>
 </head>
-<body>
+<body><div class="pdf-header"><img alt="Bellade logo" src="kleur%20Versie%201.png"/></div>
 <header>
 <div class="header-inner">
 <img alt="Bellade logo" src="kleur%20Versie%201.png"/>
 <a href="https://www.bellade.be/contact">Contact</a>
 </div>
 </header>
-<div class="container" id="pdfContent"><div class="pdf-header"><img alt="Bellade logo" src="kleur%20Versie%201.png"/></div>
+<div class="container" id="pdfContent">
 <div class="title-block">
 <h1>Bereken uw mogelijk rendement met een snellader van Bellade</h1>
 <p>Deze tool is een informatieve simulator. De resultaten zijn gebaseerd op door u ingevoerde prognoses en interne rekenmodellen. Bellade kan niet aansprakelijk worden gesteld voor verschillen tussen deze simulatie en de werkelijke financiële prestaties.</p>
@@ -296,7 +306,7 @@
 </div>
 <!-- PDF Download knop -->
 <button class="download-knop" onclick="downloadPDF()">Download als PDF</button>
-<div class="pdf-footer">Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be</div></div>
+</div>
 <footer>
 <p>© 2025 Bellade. Alle rechten voorbehouden.</p>
 <p>
@@ -458,28 +468,23 @@
       }
     }
 
-    
-function downloadPDF() {
-  const element = document.getElementById('pdfContent');
-  element.style.transform = "scale(0.72)";
-  element.style.transformOrigin = "top left";
+    function downloadPDF() {
+      window.scrollTo(0, 0);
+      document.getElementById("vergelijkingBlok").style.display = "flex";
+      document.getElementById("overzichtBlok").style.display = "block";
 
-  const opt = {
-    margin: 0,
-    filename: 'bellade-simulatie.pdf',
-    image: { type: 'jpeg', quality: 1 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-  };
-
-  html2pdf().set(opt).from(element).save().then(() => {
-    element.style.transform = "";
-    element.style.transformOrigin = "";
-  });
-}
+      const element = document.getElementById('pdfContent');
+      
+      const opt = {
+        margin: 0,
+        filename: 'bellade-simulatie.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all'] }
       };
       html2pdf().set(opt).from(element).save();
     }
   </script>
-</body>
+<div class="pdf-footer">Bellade BV · Belladestraat 1 · 1000 Brussel · BTW BE0123.456.789 · +32 2 123 45 67 · info@bellade.be</div></body>
 </html>
