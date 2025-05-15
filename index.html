@@ -349,7 +349,9 @@
           const sessies = res.sessies_rij[m];
           const sessies_maand = sessies * 30;
           const energie = sessies_maand * 39;
-          const omz = sessies_maand * 39 * parseFloat(data.kwhprijs) + (parseFloat(data.starttarief) + 1) * sessies_maand;
+          const brutoOmzet = sessies_maand * 39 * parseFloat(data.kwhprijs) + (parseFloat(data.starttarief) + 1) * sessies_maand;
+          const commissie = parseFloat(data.commissie || 0);
+          const omz = brutoOmzet * (1 - commissie / 100);
           const ek = energie * parseFloat(data.kostprijsenergie);
           const cap = energie > ((50 * parseFloat(data.vermogen)) / 12) / 0.35 ? ((50 * parseFloat(data.vermogen)) / 12) : energie * 0.35;
           const hr = m < 60 ? parseFloat(data.huurprijs) : 275;
