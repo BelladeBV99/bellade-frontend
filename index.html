@@ -292,6 +292,7 @@
 </div>
 </div>
 <button onclick="bereken()" type="button">Start calculatie</button>
+<button type="button" onclick="copyShareURL()">Kopieer deel-link</button>
 </form>
 </div>
 <!-- Vergelijking -->
@@ -320,6 +321,75 @@
 </p>
 </footer>
 <script>
+function applyFromURLAndAutoCalc() {
+  const params = new URLSearchParams(window.location.search);
+  if (!params.toString()) return; // geen querystring = niks te doen
+
+  const form = document.getElementById("form");
+  if (!form) return;
+
+  // 1) Vul velden in op basis van querystring (alleen bestaande form-names)
+  for (const el of form.elements) {
+    if (el.name && params.has(el.name)) {
+      el.value = params.get(el.name);
+    }
+  }
+
+  // 2) Automatisch berekenen
+  const shouldAutoCalc =
+    params.get("view") === "results" || params.get("autocalc") === "1";
+
+  if (shouldAutoCalc) {
+    // Optioneel: formulier/titel verbergen als view=results
+    if (params.get("view") === "results") {
+      const formBlock = document.querySelector('.block');       // eerste blok = invoer
+      if (formBlock) formBlock.style.display = "none";
+      // Wil je de titel ook verbergen? Haal dan de volgende 2 regels uit comment:
+      // const titleBlock = document.querySelector('.title-block');
+      // if (titleBlock) titleBlock.style.display = "none";
+    }
+
+    // kleine delay zodat DOM update klaar is
+    setTimeout(() => {
+      bereken();
+      // scroll naar resultaten
+      const target = document.getElementById("vergelijkingBlok") || document.getElementById("overzichtBlok");
+      if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 50);
+  }
+}
+
+// Start: probeer automatisch uit URL te laden en te berekenen
+document.addEventListener("DOMContentLoaded", applyFromURLAndAutoCalc);
+ 
+function copyShareURL() {
+  const form = document.getElementById("form");
+  const params = new URLSearchParams();
+
+  // verzamel alle inputvelden
+  for (const el of form.elements) {
+    if (el.name && el.value !== "") {
+      params.append(el.name, el.value);
+    }
+  }
+
+  // voeg view=results toe zodat de ontvanger meteen de resultaten ziet
+  params.append("view", "results");
+
+  const base = window.location.origin + window.location.pathname;
+  const shareURL = `${base}?${params.toString()}`;
+
+  // probeer te kopiëren naar klembord
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(shareURL)
+      .then(() => alert("Deel-link gekopieerd naar klembord:\n" + shareURL))
+      .catch(() => prompt("Kopieer deze link:", shareURL));
+  } else {
+    prompt("Kopieer deze link:", shareURL);
+  }
+}
+
+ 
     function formatEuro(getal) {
       return parseFloat(getal).toFixed(2)
         .replace('.', ',')
