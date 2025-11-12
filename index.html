@@ -389,6 +389,79 @@ function copyShareURL() {
   }
 }
 
+// Maak of haal de toggle-knop
+function ensureResultsToggle() {
+  if (document.getElementById("toggleInputsBtn")) return;
+
+  var headerInner = document.querySelector(".header-inner");
+  var btn = document.createElement("button");
+  btn.id = "toggleInputsBtn";
+  btn.type = "button";
+  btn.textContent = "Toon invoer";
+  btn.style.marginLeft = "12px";
+  btn.style.backgroundColor = "#E3F9E0";
+  btn.style.border = "1px solid #005A00";
+  btn.style.borderRadius = "12px";
+  btn.style.padding = "8px 14px";
+  btn.style.fontWeight = "800";
+  btn.style.cursor = "pointer";
+  btn.style.color = "#005A00";
+
+  btn.addEventListener("click", function() {
+    var formBlock = document.querySelector(".block"); // eerste blok = invoer
+    if (!formBlock) return;
+    var hidden = formBlock.style.display === "none";
+    formBlock.style.display = hidden ? "" : "none";
+    btn.textContent = hidden ? "Verberg invoer" : "Toon invoer";
+    if (hidden) formBlock.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  // plaats de knop rechts naast de Contact-knop
+  if (headerInner) headerInner.appendChild(btn);
+}
+
+// --- pas je bestaande applyFromURLAndAutoCalc aan: vervang alleen het deel dat het formulier verbergt ---
+(function patchAutoCalcHideBehavior(){
+  var original = window.applyFromURLAndAutoCalc;
+  if (typeof original !== "function") return; // als je de naam anders hebt, skip
+
+  window.applyFromURLAndAutoCalc = function() {
+    var qs = window.location.search;
+    var params = new URLSearchParams(qs);
+    var form = document.getElementById("form");
+
+    if (qs && qs.length > 1 && form) {
+      // velden invullen (zoals je al had)
+      for (var i = 0; i < form.elements.length; i++) {
+        var el = form.elements[i];
+        if (!el || !el.name) continue;
+        var tag = (el.tagName || "").toUpperCase();
+        if (tag !== "INPUT" && tag !== "TEXTAREA" && tag !== "SELECT") continue;
+        if (params.has(el.name)) el.value = params.get(el.name);
+      }
+    }
+
+    var shouldAutoCalc = (params.get("view") === "results") || (params.get("autocalc") === "1");
+
+    if (shouldAutoCalc) {
+      // In plaats van permanent te verbergen: start in 'verborgen' toestand, mét toggle-knop
+      if (params.get("view") === "results") {
+        var formBlock = document.querySelector(".block");
+        if (formBlock) formBlock.style.display = "none";
+        ensureResultsToggle();
+        // Zet knoptekst passend
+        var tbtn = document.getElementById("toggleInputsBtn");
+        if (tbtn) tbtn.textContent = "Toon invoer";
+      }
+
+      setTimeout(function(){
+        if (typeof window.bereken === "function") window.bereken();
+        var target = document.getElementById("vergelijkingBlok") || document.getElementById("overzichtBlok");
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
+    }
+  };
+})();
  
     function formatEuro(getal) {
       return parseFloat(getal).toFixed(2)
