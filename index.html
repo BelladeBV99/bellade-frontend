@@ -332,7 +332,7 @@
     async function bereken() {
       const formData = new FormData(document.getElementById("form"));
       const data = Object.fromEntries([...formData.entries()].map(([k, v]) => [k, v.replace(',', '.')]));
-      data["huurprijs_later"] = 275;
+
       data["verbruik_per_sessie"] = 39;
       data["parkeertarief"] = 1;
 
