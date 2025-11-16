@@ -407,7 +407,7 @@
         document.getElementById("kern_max_verlies").textContent = formatEuro(res.max_verlies) + " €";
         document.getElementById("kern_rendement_61").textContent = formatEuro(res.rendement_maand_61) + " €";
         document.getElementById("kern_rendement_jaarlijks").textContent = formatEuro(res.rendement_jaarlijks) + " %";
-        document.getElementById("kern_terugverdentijd").textContent = res.terugverdentijd + " maanden";
+        document.getElementById("kern_terugverdientijd").textContent = res.terugverdientijd + " maanden";
         document.getElementById("kern_rendement_12jaar").textContent = formatEuro(res.rendement_12jaar) + " €";
 
         const canvas = document.getElementById("lineChart");
@@ -454,16 +454,16 @@
                       backgroundColor: 'transparent'
                     }
                   },
-                  terugverdentijd: {
+                  terugverdientijd: {
                     type: 'line',
-                    xMin: res.terugverdentijd,
-                    xMax: res.terugverdentijd,
+                    xMin: res.terugverdientijd,
+                    xMax: res.terugverdientijd,
                     borderColor: '#0000FF',
                     borderDash: [4, 4],
                     borderWidth: 2,
                     label: {
                       display: true,
-                      content: 'Terugverdentijd',
+                      content: 'Terugverdientijd',
                       color: '#0000FF',
                       position: 'start',
                       backgroundColor: 'transparent'
