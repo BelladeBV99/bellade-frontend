@@ -305,7 +305,7 @@
 <div class="kerncijfer-item"><div>Maximale negatieve positie</div><span id="kern_max_verlies">-</span></div>
 <div class="kerncijfer-item"><div>Rendement maand 61</div><span id="kern_rendement_61">-</span></div>
 <div class="kerncijfer-item"><div>Jaarlijks rendement</div><span id="kern_rendement_jaarlijks">-</span></div>
-<div class="kerncijfer-item"><div>Terugverdientijd</div><span id="kern_terugverdientijd">-</span></div>
+<div class="kerncijfer-item"><div>Terugverdentijd</div><span id="kern_terugverdentijd">-</span></div>
 <div class="kerncijfer-item"><div>Rendement na 12 jaar</div><span id="kern_rendement_12jaar">-</span></div>
 </div>
 <canvas id="lineChart"></canvas>
@@ -407,7 +407,7 @@
         document.getElementById("kern_max_verlies").textContent = formatEuro(res.max_verlies) + " €";
         document.getElementById("kern_rendement_61").textContent = formatEuro(res.rendement_maand_61) + " €";
         document.getElementById("kern_rendement_jaarlijks").textContent = formatEuro(res.rendement_jaarlijks) + " %";
-        document.getElementById("kern_terugverdientijd").textContent = res.terugverdientijd + " maanden";
+        document.getElementById("kern_terugverdentijd").textContent = res.terugverdentijd + " maanden";
         document.getElementById("kern_rendement_12jaar").textContent = formatEuro(res.rendement_12jaar) + " €";
 
         const canvas = document.getElementById("lineChart");
@@ -454,16 +454,16 @@
                       backgroundColor: 'transparent'
                     }
                   },
-                  terugverdientijd: {
+                  terugverdentijd: {
                     type: 'line',
-                    xMin: res.terugverdientijd,
-                    xMax: res.terugverdientijd,
+                    xMin: res.terugverdentijd,
+                    xMax: res.terugverdentijd,
                     borderColor: '#0000FF',
                     borderDash: [4, 4],
                     borderWidth: 2,
                     label: {
                       display: true,
-                      content: 'Terugverdientijd',
+                      content: 'Terugverdentijd',
                       color: '#0000FF',
                       position: 'start',
                       backgroundColor: 'transparent'
