@@ -401,19 +401,12 @@ body.pdf-mode .pdf-only {
 <h2>Gegevens invoeren</h2>
 <form id="form">
 <div class="form-grid">
-  <div class="form-column">...</div>
-  <div class="form-column">...</div>
-  <div class="form-column">...</div>
-</div>
-<button onclick="bereken()" type="button">Start calculatie</button>
-<button type="button" onclick="copyShareURL()">Kopieer deel-link</button>
-</form>
-
-<!-- PDF-only samenvatting: BUITEN het form -->
-<div class="block pdf-only" id="pdfInputSamenvatting">
-  <h2>Ingevoerde parameters</h2>
-  <div id="pdfInputSamenvattingGrid"></div>
-</div>
+<div class="form-column">
+<label>Opstartkost in offerte (€):</label><input name="opstartkost" value="15000"/>
+<label>Huurprijs in offerte (€):</label><input name="huurprijs" value="1095"/>
+<label>Huurprijs na 60 maanden (€):</label><input name="huurprijs_later" value="275"/>
+<label>Vermogen snellader in offerte (kW):</label><input name="vermogen" value="80"/>
+</div> 
 <div class="block pdf-only" id="pdfInputSamenvatting">
   <h2>Ingevoerde parameters</h2>
   <div id="pdfInputSamenvattingGrid"></div>
