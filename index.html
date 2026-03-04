@@ -480,23 +480,44 @@
       }
     }
 
-    function downloadPDF() {
-      window.scrollTo(0, 0);
-      document.getElementById("vergelijkingBlok").style.display = "flex";
-      document.getElementById("overzichtBlok").style.display = "block";
+function downloadPDF() {
+  window.scrollTo(0, 0);
 
-      const element = document.getElementById('pdfContent');
-      
-      const opt = {
-        margin: 0,
-        filename: 'bellade-simulatie.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, scrollY: 0 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak: { mode: ['avoid-all'] }
-      };
-      html2pdf().set(opt).from(element).save();
-    }
+  // Zet alles zichtbaar dat in PDF moet
+  document.getElementById("vergelijkingBlok").style.display = "flex";
+  document.getElementById("overzichtBlok").style.display = "block";
+
+  // Activeer PDF-mode (CSS hieronder)
+  document.body.classList.add("pdf-mode");
+
+  const element = document.getElementById("pdfContent");
+
+  const opt = {
+    margin: [10, 10, 14, 10], // mm: top, left, bottom, right (netter dan 0)
+    filename: 'bellade-simulatie.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: {
+      scale: 2,
+      scrollY: 0,
+      useCORS: true,
+      backgroundColor: "#FFFFFF"
+    },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'] }
+  };
+
+  html2pdf()
+    .set(opt)
+    .from(element)
+    .save()
+    .then(() => {
+      document.body.classList.remove("pdf-mode");
+    })
+    .catch(() => {
+      document.body.classList.remove("pdf-mode");
+    });
+}
+ 
   </script>
  <script>
 /* ---- Deelbare URL bouwen en kopiëren ---- */
