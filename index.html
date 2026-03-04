@@ -659,18 +659,18 @@ async function downloadPDF() {
     return;
   }
 
-  // inputs uit form
+  // Inputs uit form
   const formData = new FormData(document.getElementById("form"));
   const inputs = Object.fromEntries([...formData.entries()]);
 
-  // grafiek als afbeelding (stabiel in PDF)
-  const lineChartCanvas = document.getElementById("lineChart");
-  const lineChartImg = (lineChartCanvas && lineChartCanvas.toDataURL)
-    ? lineChartCanvas.toDataURL("image/png", 1.0)
-    : null;
+  // Grafiek als image (stabieler dan canvas in PDF)
+  const lc = document.getElementById("lineChart");
+  const lineChartImg = (lc && lc.toDataURL) ? lc.toDataURL("image/png", 1.0) : null;
 
-  const logoUrl = "./kleur Versie 1.png"; // pas aan indien je logo anders heet
+  // Let op: liever geen spaties/encoding gedoe -> hernoem je logo naar "logo.png" in je repo
+  const logoUrl = "./logo.png"; // <-- zet je logo als logo.png naast je HTML
 
+  // Bouw PDF HTML (jouw bestaande functie)
   const html = buildPdfHtml({
     inputs,
     results: window.lastResult,
@@ -678,29 +678,31 @@ async function downloadPDF() {
     logoUrl
   });
 
-  // iframe (offscreen maar met echte afmetingen)
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.left = "-99999px";
-  iframe.style.top = "0";
-  iframe.style.width = "1200px";
-  iframe.style.height = "1700px";
-  iframe.style.opacity = "0";
-  iframe.style.pointerEvents = "none";
-  iframe.style.border = "0";
-  document.body.appendChild(iframe);
+  // 1) Maak tijdelijke container in HUIDIGE document (geen iframe)
+  const host = document.createElement("div");
+  host.id = "pdfHost";
+  host.style.position = "fixed";
+  host.style.left = "-99999px";
+  host.style.top = "0";
+  host.style.width = "1200px";
+  host.style.background = "#fff";
+  host.style.zIndex = "-1";
+  document.body.appendChild(host);
 
-  const doc = iframe.contentWindow.document;
-  doc.open();
-  doc.write(html);
-  doc.close();
+  // 2) Inject template in een wrapper zodat html2pdf 1 element kan capturen
+  host.innerHTML = `<div id="pdfRoot">${html}</div>`;
 
-  // wachten tot fonts/layout klaar zijn
-  if (doc.fonts && doc.fonts.ready) {
-    await doc.fonts.ready;
-  }
-  await new Promise(r => setTimeout(r, 150));
+  // buildPdfHtml geeft een volledige HTML pagina terug.
+  // We moeten enkel de BODY-content renderen, dus: pak de body uit de string.
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, "text/html");
+  host.innerHTML = "";
+  host.appendChild(doc.body);
 
+  // 3) Wacht kort op layout/images
+  await new Promise(r => setTimeout(r, 250));
+
+  // 4) Render naar PDF
   const opt = {
     margin: 0,
     filename: "bellade-simulatie.pdf",
@@ -709,16 +711,15 @@ async function downloadPDF() {
       scale: 2,
       useCORS: true,
       backgroundColor: "#FFFFFF",
-      windowWidth: 1200,
-      windowHeight: 1700
+      windowWidth: 1200
     },
     jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
   };
 
   try {
-    await html2pdf().set(opt).from(doc.body).save();
+    await html2pdf().set(opt).from(host).save();
   } finally {
-    iframe.remove();
+    host.remove();
   }
 }
   </script>
