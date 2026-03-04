@@ -253,6 +253,127 @@
 .pdf-footer {
   padding: 20px;
 }
+/* =========================
+   PDF MODE (html2pdf export)
+   ========================= */
+body.pdf-mode {
+  background: #fff !important;
+}
+
+body.pdf-mode header,
+body.pdf-mode footer,
+body.pdf-mode .download-knop,
+body.pdf-mode form,
+body.pdf-mode button[onclick="copyShareURL()"],
+body.pdf-mode .title-block p small {
+  display: none !important;
+}
+
+/* Toon PDF header/footer enkel in pdf-mode */
+body.pdf-mode .pdf-header,
+body.pdf-mode .pdf-footer {
+  display: block !important;
+}
+
+body.pdf-mode .container {
+  max-width: 100% !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* Strakkere typografie */
+body.pdf-mode #pdfContent {
+  background: #fff !important;
+  color: #111 !important;
+  font-family: 'Inter', sans-serif;
+}
+
+body.pdf-mode .title-block {
+  margin: 0 0 10mm 0 !important;
+  text-align: left !important;
+}
+
+body.pdf-mode .title-block h1 {
+  font-size: 18pt !important;
+  line-height: 1.2 !important;
+  margin: 0 0 4mm 0 !important;
+  color: #005A00 !important;
+}
+
+/* Maak blokken “print clean” */
+body.pdf-mode .block,
+body.pdf-mode .vergelijk-blok,
+body.pdf-mode .kerncijfer-item {
+  box-shadow: none !important;
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 10px !important;
+}
+
+/* Minder witruimte, beter voor A4 */
+body.pdf-mode .block {
+  margin: 0 0 8mm 0 !important;
+  padding: 6mm !important;
+}
+
+body.pdf-mode .vergelijking-grid {
+  gap: 6mm !important;
+  margin: 0 0 8mm 0 !important;
+}
+
+/* Kerncijfers mooi in 2 rijen i.p.v. te breed */
+body.pdf-mode .kerncijfers {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4mm !important;
+  margin-bottom: 6mm !important;
+}
+
+body.pdf-mode .kerncijfer-item {
+  min-width: 0 !important;
+  padding: 4mm !important;
+}
+
+body.pdf-mode .kerncijfer-item span {
+  font-size: 14pt !important;
+}
+
+/* Chart sizing consistent */
+body.pdf-mode #lineChart {
+  max-height: 90mm !important;
+}
+
+/* Page breaks: forceer logisch pagineren */
+.pdf-break {
+  page-break-before: always;
+  break-before: page;
+}
+
+body.pdf-mode .block,
+body.pdf-mode .vergelijk-blok,
+body.pdf-mode .kerncijfers,
+body.pdf-mode canvas {
+  page-break-inside: avoid !important;
+  break-inside: avoid !important;
+}
+
+/* PDF header/footer opmaak */
+.pdf-header {
+  padding: 0 0 4mm 0;
+  border-bottom: 1px solid #e5e5e5;
+  margin-bottom: 6mm;
+}
+.pdf-header img {
+  height: 18mm;
+}
+
+.pdf-footer {
+  margin-top: 6mm;
+  padding-top: 4mm;
+  border-top: 1px solid #e5e5e5;
+  font-size: 9pt;
+  color: #555;
+}
+ 
 </style>
 </head>
 <body><div class="pdf-header"><img alt="Bellade logo" src="kleur%20Versie%201.png"/></div>
