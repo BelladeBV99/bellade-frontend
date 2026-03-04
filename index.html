@@ -676,38 +676,48 @@
         logoUrl
       });
 
-      // iframe bouwen voor volledige CSS isolatie (UI blijft identiek)
-      const iframe = document.createElement("iframe");
-      iframe.style.position = "fixed";
-      iframe.style.right = "0";
-      iframe.style.bottom = "0";
-      iframe.style.width = "0";
-      iframe.style.height = "0";
-      iframe.style.border = "0";
-      document.body.appendChild(iframe);
+    // iframe bouwen voor volledige CSS isolatie (UI blijft identiek)
+const iframe = document.createElement("iframe");
+iframe.style.position = "fixed";
+iframe.style.left = "-99999px";      // offscreen
+iframe.style.top = "0";
+iframe.style.width = "1200px";       // belangrijk: echte breedte
+iframe.style.height = "1700px";      // belangrijk: echte hoogte
+iframe.style.opacity = "0";          // onzichtbaar
+iframe.style.pointerEvents = "none";
+iframe.style.border = "0";
+document.body.appendChild(iframe);
 
-      const doc = iframe.contentWindow.document;
-      doc.open();
-      doc.write(html);
-      doc.close();
+const doc = iframe.contentWindow.document;
+doc.open();
+doc.write(html);
+doc.close();
 
-      // wacht heel even tot fonts/layout klaar zijn
-      await new Promise(r => setTimeout(r, 350));
+// Wacht op fonts/layout (veel betrouwbaarder dan setTimeout)
+if (doc.fonts && doc.fonts.ready) {
+  await doc.fonts.ready;
+}
+await new Promise(r => setTimeout(r, 150)); // kleine extra buffer
 
-      const opt = {
-        margin: 0, // marges zitten in template body padding
-        filename: "bellade-simulatie.pdf",
-        image: { type: "jpeg", quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, backgroundColor: "#FFFFFF" },
-        jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-      };
+const opt = {
+  margin: 0, // marges zitten in template body padding
+  filename: "bellade-simulatie.pdf",
+  image: { type: "jpeg", quality: 0.98 },
+  html2canvas: {
+    scale: 2,
+    useCORS: true,
+    backgroundColor: "#FFFFFF",
+    windowWidth: 1200,   // match iframe width
+    windowHeight: 1700   // match iframe height
+  },
+  jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+};
 
-      try {
-        await html2pdf().set(opt).from(doc.body).save();
-      } finally {
-        iframe.remove();
-      }
-    }
+try {
+  await html2pdf().set(opt).from(doc.body).save();
+} finally {
+  iframe.remove();
+}
   </script>
 </body>
 </html>
